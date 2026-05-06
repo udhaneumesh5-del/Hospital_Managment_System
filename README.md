@@ -70,3 +70,5 @@ This is a complete Hospital Management System for a 400-mark academic project. I
 ```bash
 git clone https://github.com/yourusername/Hospital_Management_System.git
 cd Hospital_Management_System
+# Hospital_Managment_System
+
