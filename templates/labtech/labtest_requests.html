@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Test Requests - City General Hospital</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="{{ url_for('static', filename='images/hospital.png') }}" alt="Logo">
+                <h3>City Hospital</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('dashboard') }}" class="nav-item">📊 Dashboard</a>
+                <a href="{{ url_for('patients') }}" class="nav-item">👥 Patients</a>
+                <a href="{{ url_for('doctors') }}" class="nav-item">👨‍⚕️ Doctors</a>
+                <a href="{{ url_for('appointments') }}" class="nav-item">📅 Appointments</a>
+                <a href="{{ url_for('billing') }}" class="nav-item">💰 Billing</a>
+                <a href="{{ url_for('pharmacy') }}" class="nav-item">💊 Pharmacy</a>
+                <a href="{{ url_for('labtest') }}" class="nav-item active">🔬 Lab Tests</a>
+                <a href="{{ url_for('logout') }}" class="nav-item logout">🚪 Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h2>Lab Test Requests</h2>
+                <div class="user-info">
+                    <span>{{ session['username'] }}</span>
+                </div>
+            </header>
+
+            <div class="content-card">
+                <div class="card-header">
+                    <h3>Pending Test Requests</h3>
+                    <div class="header-actions">
+                        <a href="{{ url_for('new_labtest_request') }}" class="btn-primary">➕ New Request</a>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Patient</th>
+                                <th>Test Name</th>
+                                <th>Doctor</th>
+                                <th>Request Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in requests %}
+                            <tr>
+                                <td>{{ request.request_id }}</td>
+                                <td>{{ request.patient_name }}</td>
+                                <td>{{ request.test_name }}</td>
+                                <td>Dr. {{ request.doctor_name }}</td>
+                                <td>{{ request.request_date }}</td>
+                                <td>
+                                    {% if request.status == 'Pending' %}
+                                    <span class="status-badge status-scheduled">Pending</span>
+                                    {% elif request.status == 'Completed' %}
+                                    <span class="status-badge status-completed">Completed</span>
+                                    {% else %}
+                                    <span class="status-badge status-cancelled">Cancelled</span>
+                                    {% endif %}
+                                </td>
+                                <td class="action-buttons">
+                                    <a href="{{ url_for('view_labtest_request', request_id=request.request_id) }}" class="btn-sm btn-info">View</a>
+                                    {% if request.status == 'Pending' %}
+                                    <a href="{{ url_for('process_labtest_request', request_id=request.request_id) }}" class="btn-sm btn-success">Process</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">No test requests found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

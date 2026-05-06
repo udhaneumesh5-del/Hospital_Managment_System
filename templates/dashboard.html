@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% set active_page = 'dashboard' %}
+
+{% block title %}Dashboard - City General Hospital{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block header_title %}
+<h2>Welcome, {{ session['username'] }}!</h2>
+<p>Role: <span class="role-badge">{{ session['role'] | capitalize }}</span></p>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+            <h3>{{ total_patients }}</h3>
+            <p>Total Patients</p>
+            <span class="trend up">↑ 12%</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">👨‍⚕️</div>
+        <div class="stat-info">
+            <h3>{{ total_doctors }}</h3>
+            <p>Doctors</p>
+            <span class="trend up">↑ 5%</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-info">
+            <h3>{{ today_appointments }}</h3>
+            <p>Today's Appointments</p>
+            <span class="trend">+{{ today_appointments }}</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+            <h3>₹{{ "{:,.0f}".format(monthly_revenue) }}</h3>
+            <p>Monthly Revenue</p>
+            <span class="trend up">↑ 8%</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🏥</div>
+        <div class="stat-info">
+            <h3>{{ current_admissions }}</h3>
+            <p>Current Admissions</p>
+            <span class="trend">Active</span>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>Weekly Appointments</h3>
+        <canvas id="appointmentsChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Revenue Trend</h3>
+        <canvas id="revenueChart"></canvas>
+    </div>
+</div>
+
+<!-- Recent Activities -->
+<div class="activities-section">
+    <h3>Recent Activities</h3>
+    <div class="activities-list">
+        {% for activity in recent_activities %}
+        <div class="activity-item">
+            <div class="activity-icon">
+                {% if activity.type == 'appointment' %}📅{% else %}👤{% endif %}
+            </div>
+            <div class="activity-details">
+                <p>{{ activity.description }}</p>
+                <span class="activity-time">{{ activity.date | format_datetime }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <h3>Quick Actions</h3>
+    <div class="actions-grid">
+        <a href="{{ url_for('patients') }}" class="action-btn">
+            <span>➕</span> Add Patient
+        </a>
+        <a href="{{ url_for('appointments') }}" class="action-btn">
+            <span>📅</span> Schedule Appointment
+        </a>
+        <a href="{{ url_for('billing') }}" class="action-btn">
+            <span>💰</span> Generate Bill
+        </a>
+        <a href="{{ url_for('pharmacy') }}" class="action-btn">
+            <span>💊</span> Manage Stock
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Appointments Chart
+    const ctx1 = document.getElementById('appointmentsChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Appointments',
+                data: [12, 19, 15, 17, 14, 10, 8],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    // Revenue Chart
+    const ctx2 = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Revenue (₹)',
+                data: [250000, 310000, 280000, 350000, 420000, 380000],
+                backgroundColor: '#48bb78',
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+</script>
+{% endblock %}

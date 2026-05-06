@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% set active_page = 'dashboard' %}
+{% set show_role_badge = true %}
+{% set role_display_name = 'Doctor' %}
+
+{% block title %}Doctor Dashboard - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Doctor Dashboard</h2>
+<div class="user-info">
+    <span>Welcome, Dr. {{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Today's Schedule -->
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-info">
+            <h3>{{ today_stats.scheduled or 0 }}</h3>
+            <p>Scheduled Today</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-info">
+            <h3>{{ today_stats.completed or 0 }}</h3>
+            <p>Completed</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-info">
+            <h3>{{ today_stats.cancelled or 0 }}</h3>
+            <p>Cancelled</p>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Appointments -->
+<div class="table-container">
+    <h3>Today's Appointments</h3>
+    <table class="data-table" id="todayAppointments">
+        <thead>
+            <tr><th>Time</th><th>Patient Name</th><th>MR Number</th><th>Type</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+            {% for apt in today_appointments %}
+            <tr>
+                <td>{{ apt.appointment_time }}</td>
+                <td>{{ apt.first_name }} {{ apt.last_name }}</td>
+                <td>{{ apt.mr_number }}</td>
+                <td>{{ apt.appointment_type }}</td>
+                <td>{{ apt.status }}</td>
+                <td>
+                    <button onclick="startConsultation({{ apt.appointment_id }})" class="btn-small">Start</button>
+                    <button onclick="completeAppointment({{ apt.appointment_id }})" class="btn-small">Complete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Recent Patients -->
+<div class="table-container">
+    <h3>Recent Patients</h3>
+    <table class="data-table">
+        <thead>
+            <tr><th>Patient Name</th><th>MR Number</th><th>Last Visit</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+            {% for patient in recent_patients %}
+            <tr>
+                <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                <td>{{ patient.mr_number }}</td>
+                <td>{{ patient.last_visit }}</td>
+                <td><a href="{{ url_for('patient_detail', patient_id=patient.patient_id) }}" class="btn-small">View</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function startConsultation(id) {
+        window.location.href = `/update_appointment_status/${id}/In-Progress`;
+    }
+
+    function completeAppointment(id) {
+        if(confirm('Mark this appointment as completed?')) {
+            window.location.href = `/update_appointment_status/${id}/Completed`;
+        }
+    }
+</script>
+{% endblock %}

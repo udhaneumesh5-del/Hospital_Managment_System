@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}City General Hospital{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+    {% block extra_css %}{% endblock %}
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        {% include 'partials/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="welcome-message">
+                    {% block header_title %}
+                    <h2>Welcome, {{ session['username'] }}!</h2>
+                    <p>Role: <span class="role-badge">{{ session['role'] | capitalize }}</span></p>
+                    {% endblock %}
+                </div>
+                <div class="user-info">
+                    <span class="date-time" id="currentDateTime"></span>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                            <button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- DateTime Script -->
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeEl = document.getElementById('currentDateTime');
+            if (dateTimeEl) {
+                dateTimeEl.innerHTML = now.toLocaleString();
+            }
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

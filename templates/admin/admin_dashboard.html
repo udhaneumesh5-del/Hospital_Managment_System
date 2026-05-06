@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% set active_page = 'dashboard' %}
+{% set show_role_badge = true %}
+{% set role_display_name = 'Administrator' %}
+
+{% block title %}Admin Dashboard - City General Hospital{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block header_title %}
+<h2>Admin Dashboard</h2>
+<div class="user-info">
+    <span>Welcome, {{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Statistics -->
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+            <h3>{{ stats.total_users or 0 }}</h3>
+            <p>Total Users</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">👨‍💼</div>
+        <div class="stat-info">
+            <h3>{{ stats.total_staff or 0 }}</h3>
+            <p>Total Staff</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🏥</div>
+        <div class="stat-info">
+            <h3>{{ stats.total_departments or 0 }}</h3>
+            <p>Departments</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🛏️</div>
+        <div class="stat-info">
+            <h3>{{ stats.available_rooms or 0 }}</h3>
+            <p>Available Rooms</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+            <h3>₹{{ "%.2f"|format(stats.pending_amount or 0) }}</h3>
+            <p>Pending Amount</p>
+        </div>
+    </div>
+</div>
+
+<!-- Revenue Chart -->
+<div class="chart-card">
+    <h3>Revenue Trend (Last 6 Months)</h3>
+    <canvas id="revenueChart"></canvas>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <h3>Quick Actions</h3>
+    <div class="actions-grid">
+        <a href="{{ url_for('patients') }}" class="action-btn">➕ Add Patient</a>
+        <a href="{{ url_for('doctors') }}" class="action-btn">👨‍⚕️ Add Doctor</a>
+        <a href="{{ url_for('appointments') }}" class="action-btn">📅 Schedule Appointment</a>
+        <a href="{{ url_for('billing') }}" class="action-btn">💰 Generate Bill</a>
+        <a href="{{ url_for('pharmacy') }}" class="action-btn">💊 Add Medicine</a>
+        <a href="{{ url_for('labtest') }}" class="action-btn">🔬 Add Lab Test</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Revenue Chart
+    const revenueData = {{ revenue_chart | tojson }};
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: revenueData.map(item => item.month),
+            datasets: [{
+                label: 'Revenue (₹)',
+                data: revenueData.map(item => item.revenue),
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+</script>
+{% endblock %}

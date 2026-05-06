@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% set active_page = 'labtests' %}
+
+{% block title %}Lab Test Details - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Lab Test Details</h2>
+<div class="user-info">
+    <span>{{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="card-header">
+            <h3>{{ test.test_name }}</h3>
+            <div class="card-actions">
+                <a href="{{ url_for('edit_labtest', test_id=test.test_id) }}" class="btn-sm btn-info">Edit</a>
+                <a href="{{ url_for('labtest') }}" class="btn-sm btn-secondary">Back</a>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <div><strong>Test Code:</strong> {{ test.test_code }}</div>
+            <div><strong>Category:</strong> {{ test.category or 'General' }}</div>
+            <div><strong>Price:</strong> {{ "%.2f"|format(test.price) }}</div>
+            <div><strong>Normal Range:</strong> {{ test.normal_range or 'N/A' }}</div>
+            <div><strong>Unit:</strong> {{ test.unit or 'N/A' }}</div>
+            <div><strong>Reporting Time:</strong> {{ test.reporting_time or '24 hours' }}</div>
+            <div><strong>Status:</strong>
+                {% if test.is_active %}
+                <span class="status-badge status-completed">Active</span>
+                {% else %}
+                <span class="status-badge status-cancelled">Inactive</span>
+                {% endif %}
+            </div>
+            <div><strong>Created At:</strong> {{ test.created_at or 'N/A' }}</div>
+        </div>
+
+        <div class="description">
+            <strong>Description:</strong>
+            <p>{{ test.description or 'No description available' }}</p>
+        </div>
+
+        <div class="description">
+            <strong>Instructions:</strong>
+            <p>{{ test.instructions or 'No special instructions' }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

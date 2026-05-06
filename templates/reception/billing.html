@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+{% set active_page = 'billing' %}
+
+{% block title %}Billing - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Billing & Invoicing</h2>
+<div class="user-info">
+    <span>{{ session['username'] }}</span>
+    <button class="btn-add" onclick="openModal('generateBillModal')">+ Generate Bill</button>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Financial Summary -->
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+            <h3>₹{{ "%.2f"|format(summary.total_revenue or 0) }}</h3>
+            <p>Total Revenue</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">💵</div>
+        <div class="stat-info">
+            <h3>₹{{ "%.2f"|format(summary.total_collected or 0) }}</h3>
+            <p>Amount Collected</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-info">
+            <h3>₹{{ "%.2f"|format(summary.total_outstanding or 0) }}</h3>
+            <p>Outstanding</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar">
+    <select id="statusFilter" onchange="filterBills()">
+        <option value="">All Status</option>
+        <option value="Paid" {% if status_filter == 'Paid' %}selected{% endif %}>Paid</option>
+        <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+        <option value="Partial" {% if status_filter == 'Partial' %}selected{% endif %}>Partial</option>
+    </select>
+    <input type="date" id="dateFrom" placeholder="From Date" value="{{ date_from }}" onchange="filterBills()">
+    <input type="date" id="dateTo" placeholder="To Date" value="{{ date_to }}" onchange="filterBills()">
+    <button class="btn-reset" onclick="resetFilters()">Reset</button>
+    <button class="btn-export" onclick="exportToCSV('billsTable', 'bills_report')">📥 Export CSV</button>
+</div>
+
+<!-- Bills Table -->
+<div class="table-container">
+    <table class="data-table" id="billsTable">
+        <thead>
+            <tr>
+                <th>Bill No</th>
+                <th>Patient</th>
+                <th>MR No</th>
+                <th>Bill Date</th>
+                <th>Due Date</th>
+                <th>Amount</th>
+                <th>Paid</th>
+                <th>Balance</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bill in bills %}
+            <tr>
+                <td>{{ bill.bill_number }}</td>
+                <td>{{ bill.first_name }} {{ bill.last_name }}</td>
+                <td>{{ bill.mr_number }}</td>
+                <td>{{ bill.bill_date }}</td>
+                <td>{{ bill.due_date }}</td>
+                <td>₹{{ "%.2f"|format(bill.total_amount) }}</td>
+                <td>₹{{ "%.2f"|format(bill.amount_paid) }}</td>
+                <td class="{% if bill.balance_amount > 0 %}text-danger{% endif %}">
+                    ₹{{ "%.2f"|format(bill.balance_amount) }}
+                </td>
+                <td>
+                    <span class="status-badge status-{{ bill.payment_status.lower() }}">
+                        {{ bill.payment_status }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{{ url_for('view_bill', bill_id=bill.bill_id) }}" class="btn-icon" title="View Bill">👁️</a>
+                    <a href="{{ url_for('print_bill', bill_id=bill.bill_id) }}" target="_blank" class="btn-icon" title="Print Bill">🖨️</a>
+                    {% if bill.payment_status != 'Paid' %}
+                    <button onclick="openPaymentModal({{ bill.bill_id }})" class="btn-icon" title="Record Payment">💵</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Generate Bill Modal -->
+<div id="generateBillModal" class="modal">
+    <div class="modal-content modal-large">
+        <span class="close-modal" onclick="closeModal('generateBillModal')">&times;</span>
+        <h2>Generate New Bill</h2>
+        <form action="{{ url_for('generate_bill') }}" method="POST" id="billForm">
+            <div class="form-group">
+                <label>Patient *</label>
+                <select name="patient_id" id="billPatientSelect" required onchange="loadPatientDetails()">
+                    <option value="">Select Patient</option>
+                    {% for patient in patients %}
+                    <option value="{{ patient.patient_id }}">{{ patient.first_name }} {{ patient.last_name }} ({{ patient.mr_number }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Appointment (Optional)</label>
+                <select name="appointment_id" id="appointmentSelect">
+                    <option value="">Select Appointment</option>
+                </select>
+            </div>
+
+            <h3>Bill Items</h3>
+            <div id="bill-items-container">
+                <div class="bill-item">
+                    <div class="form-row">
+                        <select name="item_type[]" class="item-type" style="width: 20%;">
+                            <option value="Consultation">Consultation</option>
+                            <option value="Medicine">Medicine</option>
+                            <option value="Lab Test">Lab Test</option>
+                            <option value="Room">Room</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" name="item_name[]" placeholder="Item Name" style="width: 40%;" required>
+                        <input type="number" name="quantity[]" placeholder="Qty" class="quantity" value="1" style="width: 15%;" onchange="calculateBillTotal()">
+                        <input type="number" step="0.01" name="unit_price[]" placeholder="Price" class="price" style="width: 20%;" onchange="calculateBillTotal()">
+                        <button type="button" onclick="removeBillItem(this)" class="btn-remove">✖</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" onclick="addBillItem()" class="btn-add-item">+ Add Item</button>
+
+            <div class="bill-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">₹0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>GST (18%):</span>
+                    <span id="tax">₹0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Discount:</span>
+                    <span>
+                        <input type="number" step="0.01" name="discount" id="discount" value="0" style="width: 100px;" onchange="calculateBillTotal()">
+                    </span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total Amount:</span>
+                    <span id="total">₹0.00</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Payment Method</label>
+                <select name="payment_method">
+                    <option value="Cash">Cash</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Insurance">Insurance</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Discount Reason</label>
+                <input type="text" name="discount_reason" placeholder="Reason for discount">
+            </div>
+            <button type="submit" class="btn-submit">Generate Bill</button>
+        </form>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal('paymentModal')">&times;</span>
+        <h2>Record Payment</h2>
+        <form id="paymentForm" method="POST">
+            <div class="form-group">
+                <label>Amount to Pay *</label>
+                <input type="number" step="0.01" name="amount" id="paymentAmount" required>
+            </div>
+            <div class="form-group">
+                <label>Payment Method</label>
+                <select name="payment_method">
+                    <option value="Cash">Cash</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="UPI">UPI</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Transaction ID (Optional)</label>
+                <input type="text" name="transaction_id">
+            </div>
+            <button type="submit" class="btn-submit">Record Payment</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentBillId = null;
+
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+        if (modalId === 'generateBillModal') {
+            calculateBillTotal();
+        }
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    function addBillItem() {
+        const container = document.getElementById('bill-items-container');
+        const newItem = document.createElement('div');
+        newItem.className = 'bill-item';
+        newItem.innerHTML = `
+            <div class="form-row">
+                <select name="item_type[]" class="item-type" style="width: 20%;">
+                    <option value="Consultation">Consultation</option>
+                    <option value="Medicine">Medicine</option>
+                    <option value="Lab Test">Lab Test</option>
+                    <option value="Room">Room</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input type="text" name="item_name[]" placeholder="Item Name" style="width: 40%;" required>
+                <input type="number" name="quantity[]" placeholder="Qty" class="quantity" value="1" style="width: 15%;" onchange="calculateBillTotal()">
+                <input type="number" step="0.01" name="unit_price[]" placeholder="Price" class="price" style="width: 20%;" onchange="calculateBillTotal()">
+                <button type="button" onclick="removeBillItem(this)" class="btn-remove">✖</button>
+            </div>
+        `;
+        container.appendChild(newItem);
+    }
+
+    function removeBillItem(button) {
+        const container = document.getElementById('bill-items-container');
+        if (container.children.length > 1) {
+            button.closest('.bill-item').remove();
+            calculateBillTotal();
+        } else {
+            showNotification('At least one bill item is required', 'warning');
+        }
+    }
+
+    function calculateBillTotal() {
+        const items = document.querySelectorAll('.bill-item');
+        let subtotal = 0;
+
+        items.forEach(item => {
+            const quantity = parseFloat(item.querySelector('.quantity')?.value || 0);
+            const price = parseFloat(item.querySelector('.price')?.value || 0);
+            subtotal += quantity * price;
+        });
+
+        const tax = subtotal * 0.18;
+        const discount = parseFloat(document.getElementById('discount')?.value || 0);
+        const total = subtotal + tax - discount;
+
+        document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+        document.getElementById('tax').textContent = `₹${tax.toFixed(2)}`;
+        document.getElementById('total').textContent = `₹${total.toFixed(2)}`;
+
+        return total;
+    }
+
+    async function loadPatientDetails() {
+        const patientId = document.getElementById('billPatientSelect').value;
+        if (!patientId) return;
+
+        const response = await fetch(`/api/patients/${patientId}/appointments`);
+        const appointments = await response.json();
+
+        const select = document.getElementById('appointmentSelect');
+        select.innerHTML = '<option value="">Select Appointment</option>';
+        appointments.forEach(apt => {
+            const option = document.createElement('option');
+            option.value = apt.appointment_id;
+            option.textContent = `${apt.appointment_date} - Dr. ${apt.doctor_name}`;
+            select.appendChild(option);
+        });
+    }
+
+    function openPaymentModal(billId) {
+        currentBillId = billId;
+        const modal = document.getElementById('paymentModal');
+        const form = document.getElementById('paymentForm');
+        form.action = `/make_payment/${billId}`;
+        modal.style.display = 'flex';
+    }
+
+    function filterBills() {
+        const status = document.getElementById('statusFilter').value;
+        const dateFrom = document.getElementById('dateFrom').value;
+        const dateTo = document.getElementById('dateTo').value;
+        window.location.href = `/billing?status=${status}&date_from=${dateFrom}&date_to=${dateTo}`;
+    }
+
+    function resetFilters() {
+        window.location.href = '/billing';
+    }
+
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

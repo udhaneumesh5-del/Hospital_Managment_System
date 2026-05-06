@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% set active_page = 'appointments' %}
+
+{% block title %}Appointment Details - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Appointment Details</h2>
+<div class="user-info">
+    <span>{{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <!-- Appointment Info -->
+    <div class="detail-card">
+        <h3>Appointment Information</h3>
+        <div class="detail-grid">
+            <div><strong>Appointment No:</strong> {{ appointment.appointment_number }}</div>
+            <div><strong>Date:</strong> {{ appointment.appointment_date }}</div>
+            <div><strong>Time:</strong> {{ appointment.appointment_time }}</div>
+            <div><strong>Type:</strong> {{ appointment.appointment_type }}</div>
+            <div><strong>Status:</strong> <span class="status-badge status-{{ appointment.status.lower() }}">{{ appointment.status }}</span></div>
+            <div><strong>Payment Status:</strong> {{ appointment.payment_status }}</div>
+        </div>
+    </div>
+
+    <!-- Patient Info -->
+    <div class="detail-card">
+        <h3>Patient Information</h3>
+        <div class="detail-grid">
+            <div><strong>Name:</strong> {{ appointment.patient_first }} {{ appointment.patient_last }}</div>
+            <div><strong>MR Number:</strong> {{ appointment.mr_number }}</div>
+            <div><strong>Phone:</strong> {{ appointment.phone }}</div>
+            <div><strong>Email:</strong> {{ appointment.email }}</div>
+        </div>
+        <div class="symptoms">
+            <strong>Symptoms:</strong>
+            <p>{{ appointment.symptoms or 'No symptoms recorded' }}</p>
+        </div>
+    </div>
+
+    <!-- Doctor Info -->
+    <div class="detail-card">
+        <h3>Doctor Information</h3>
+        <div class="detail-grid">
+            <div><strong>Name:</strong> Dr. {{ appointment.doctor_first }} {{ appointment.doctor_last }}</div>
+            <div><strong>Specialization:</strong> {{ appointment.specialization }}</div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-buttons">
+        {% if appointment.status == 'Scheduled' %}
+        <a href="{{ url_for('update_appointment_status', appointment_id=appointment.appointment_id, status='Completed') }}" class="btn-success">Mark Completed</a>
+        <a href="{{ url_for('update_appointment_status', appointment_id=appointment.appointment_id, status='Cancelled') }}" class="btn-danger">Cancel Appointment</a>
+        {% endif %}
+        <a href="{{ url_for('appointments') }}" class="btn-secondary">Back to List</a>
+    </div>
+</div>
+{% endblock %}

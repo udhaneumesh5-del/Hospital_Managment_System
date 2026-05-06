@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City General Hospital - Advanced Healthcare Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/hospital.png') }}" alt="Hospital Logo">
+                <span>City General Hospital</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#departments">Departments</a></li>
+                <li><a href="#doctors">Doctors</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="{{ url_for('login') }}" class="btn-login-nav">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1>Your Health, Our Priority</h1>
+                <p>Advanced Healthcare Management System with 24/7 Emergency Services</p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('login') }}" class="btn-primary">Access Dashboard</a>
+                    <a href="#appointment" class="btn-secondary">Book Appointment</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Happy Patients</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Expert Doctors</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Emergency Service</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100+</div>
+                    <div class="stat-label">Modern Beds</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-content">
+                    <h2>About City General Hospital</h2>
+                    <p>City General Hospital is a premier healthcare institution committed to providing compassionate, high-quality medical care to our community. With state-of-the-art facilities and a team of dedicated healthcare professionals, we strive to deliver excellence in every aspect of patient care.</p>
+                    <div class="features-list">
+                        <div class="feature">
+                            <span class="feature-icon">🏥</span>
+                            <h4>24/7 Emergency Care</h4>
+                            <p>Round-the-clock emergency services with rapid response team</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">👨‍⚕️</span>
+                            <h4>Expert Medical Team</h4>
+                            <p>Highly qualified doctors and specialized healthcare professionals</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">💊</span>
+                            <h4>Advanced Pharmacy</h4>
+                            <p>Fully stocked pharmacy with genuine medicines</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🔬</span>
+                            <h4>Modern Laboratory</h4>
+                            <p>Advanced diagnostic facilities and accurate test results</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="{{ url_for('static', filename='images/hospital.png') }}" alt="Hospital Building">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🚑</div>
+                    <h3>Emergency Services</h3>
+                    <p>24/7 emergency care with dedicated trauma center and ambulance services</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🏥</div>
+                    <h3>Inpatient Care</h3>
+                    <p>Comfortable rooms with modern amenities and 24/7 nursing care</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔬</div>
+                    <h3>Diagnostic Services</h3>
+                    <p>Advanced imaging and laboratory services with accurate results</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💊</div>
+                    <h3>Pharmacy</h3>
+                    <p>Well-stocked pharmacy with prescription and OTC medicines</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">❤️</div>
+                    <h3>Cardiology</h3>
+                    <p>Comprehensive heart care with advanced treatment options</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🧠</div>
+                    <h3>Neurology</h3>
+                    <p>Expert care for brain and nervous system disorders</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Departments Section -->
+    <section id="departments" class="departments">
+        <div class="container">
+            <h2 class="section-title">Our Departments</h2>
+            <div class="departments-grid">
+                <div class="dept-card">Cardiology</div>
+                <div class="dept-card">Neurology</div>
+                <div class="dept-card">Pediatrics</div>
+                <div class="dept-card">Orthopedics</div>
+                <div class="dept-card">Gynecology</div>
+                <div class="dept-card">Dermatology</div>
+                <div class="dept-card">Ophthalmology</div>
+                <div class="dept-card">ENT</div>
+                <div class="dept-card">Emergency Medicine</div>
+                <div class="dept-card">Radiology</div>
+                <div class="dept-card">Pathology</div>
+                <div class="dept-card">Physiotherapy</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Appointment Section -->
+    <section id="appointment" class="appointment-section">
+        <div class="container">
+            <h2 class="section-title">Book an Appointment</h2>
+            <div class="appointment-form-container">
+           <form action="{{ url_for('new_appointment') }}" method="POST" class="appointment-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" name="patient_name" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" name="phone" placeholder="Phone Number" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <select name="department" required>
+                                <option value="">Select Department</option>
+                                <option>Cardiology</option>
+                                <option>Neurology</option>
+                                <option>Pediatrics</option>
+                                <option>Orthopedics</option>
+                                <option>Gynecology</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select name="doctor_id" id="doctor_select" required>
+                                <option value="">Select Doctor</option>
+                                {% for doctor in doctors %}
+                                <option value="{{ doctor.doctor_id }}" data-dept="{{ doctor.dept_name }}">
+                                    Dr. {{ doctor.first_name }} {{ doctor.last_name }} - {{ doctor.specialization }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="date" name="appointment_date" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="time" name="appointment_time" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="symptoms" placeholder="Describe your symptoms" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Book Appointment</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <h3>City General Hospital</h3>
+                    <p>Committed to providing exceptional healthcare services with compassion and excellence.</p>
+                    <div class="social-links">
+                        <a href="#">📘</a>
+                        <a href="#">🐦</a>
+                        <a href="#">📷</a>
+                        <a href="#">💼</a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#doctors">Doctors</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Contact Info</h3>
+                    <p>📍 123 Healthcare Avenue, Medical District, City - 400001</p>
+                    <p>📞 +91 1234567890</p>
+                    <p>📧 contact@cityhospital.com</p>
+                    <p>🚑 Emergency: 102</p>
+                </div>
+                <div class="footer-hours">
+                    <h3>Working Hours</h3>
+                    <p>Monday - Friday: 8:00 AM - 8:00 PM</p>
+                    <p>Saturday: 9:00 AM - 5:00 PM</p>
+                    <p>Sunday: 9:00 AM - 2:00 PM</p>
+                    <p>Emergency: 24/7</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 City General Hospital. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Filter doctors by department
+        document.addEventListener('DOMContentLoaded', function() {
+            const deptSelect = document.querySelector('select[name="department"]');
+            const doctorSelect = document.getElementById('doctor_select');
+            const allOptions = Array.from(doctorSelect.querySelectorAll('option'));
+
+            // Set default date to today
+            const dateInput = document.querySelector('input[name="appointment_date"]');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.value = today;
+                dateInput.min = today;
+            }
+
+            if (deptSelect && doctorSelect) {
+                deptSelect.addEventListener('change', function() {
+                    const selectedDept = this.value;
+
+                    // Clear current options
+                    doctorSelect.innerHTML = '<option value="">Select Doctor</option>';
+
+                    // Filter and add matching doctors
+                    allOptions.forEach(option => {
+                        if (option.value === '') return;
+                        const optionDept = option.getAttribute('data-dept');
+
+                        // Show doctor if no department selected or if department matches
+                        if (!selectedDept || optionDept === selectedDept || !optionDept) {
+                            doctorSelect.appendChild(option.cloneNode(true));
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

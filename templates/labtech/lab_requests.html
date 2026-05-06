@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% set active_page = 'lab_orders' %}
+
+{% block title %}Lab Test Requests - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Lab Test Requests</h2>
+<div class="user-info">
+    <span>{{ session['username'] }} ({{ session['role'] }})</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h3>All Test Requests</h3>
+        <div class="header-actions">
+            <a href="{{ url_for('new_lab_request') }}" class="btn-primary">New Request</a>
+        </div>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="filter-section">
+        <form method="GET" action="{{ url_for('lab_requests') }}" class="filter-form">
+            <div class="filter-group">
+                <label>Status:</label>
+                <select name="status">
+                    <option value="">All</option>
+                    <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="In Progress" {% if status_filter == 'In Progress' %}selected{% endif %}>In Progress</option>
+                    <option value="Completed" {% if status_filter == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="Cancelled" {% if status_filter == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button type="submit" class="btn-secondary">Filter</button>
+                <a href="{{ url_for('lab_requests') }}" class="btn-link">Clear</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Request No</th>
+                    <th>Patient</th>
+                    <th>Test Name</th>
+                    <th>Doctor</th>
+                    <th>Request Date</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                <tr>
+                    <td>{{ request.request_number }}</td>
+                    <td>
+                        {{ request.patient_first }} {{ request.patient_last }}<br>
+                        <small class="text-muted">{{ request.mr_number }}</small>
+                    </td>
+                    <td>{{ request.test_name }}</td>
+                    <td>Dr. {{ request.doctor_first }} {{ request.doctor_last }}</td>
+                    <td>{{ request.request_date }}</td>
+                    <td>
+                        {% if request.priority == 'Emergency' %}
+                        <span class="status-badge status-cancelled">Emergency</span>
+                        {% elif request.priority == 'Urgent' %}
+                        <span class="status-badge status-scheduled">Urgent</span>
+                        {% else %}
+                        <span class="status-badge status-completed">Routine</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if request.status == 'Pending' %}
+                        <span class="status-badge status-scheduled">Pending</span>
+                        {% elif request.status == 'In Progress' %}
+                        <span class="status-badge status-warning">In Progress</span>
+                        {% elif request.status == 'Completed' %}
+                        <span class="status-badge status-completed">Completed</span>
+                        {% else %}
+                        <span class="status-badge status-cancelled">Cancelled</span>
+                        {% endif %}
+                    </td>
+                    <td class="action-buttons">
+                        <a href="{{ url_for('view_lab_request', request_id=request.request_id) }}" class="btn-sm btn-info">View</a>
+                        {% if request.status == 'Pending' %}
+                        <a href="{{ url_for('process_lab_request', request_id=request.request_id) }}" class="btn-sm btn-success">Process</a>
+                        {% endif %}
+                        {% if request.status == 'Completed' %}
+                        <a href="{{ url_for('print_lab_report', request_id=request.request_id) }}" class="btn-sm btn-secondary">Print</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">No test requests found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

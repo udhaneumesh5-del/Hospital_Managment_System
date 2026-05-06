@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - City General Hospital</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-body">
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="login-header">
+                <img src="{{ url_for('static', filename='images/hospital.png') }}" alt="Logo" class="login-logo">
+                <h2>City General Hospital</h2>
+                <p>Hospital Management System</p>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" class="login-form">
+                <div class="input-group">
+                    <i class="input-icon">👤</i>
+                    <input type="text" name="username" placeholder="Username" required autofocus>
+                </div>
+                <div class="input-group">
+                    <i class="input-icon">🔒</i>
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="remember-me">
+                    <label>
+                        <input type="checkbox" name="remember"> Remember Me
+                    </label>
+                    <a href="#">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn-login">Sign In</button>
+            </form>
+            
+            <div class="demo-credentials">
+                <p><strong>Demo Credentials:</strong></p>
+                <div class="credentials-grid">
+                    <div><span class="role-badge admin">Admin</span> admin / admin123</div>
+                    <div><span class="role-badge doctor">Doctor</span> dr.smith / doctor123</div>
+                    <div><span class="role-badge reception">Reception</span> reception / recep123</div>
+                    <div><span class="role-badge pharmacy">Pharmacy</span> pharmacy / pharmacy123</div>
+                    <div><span class="role-badge lab">Lab Tech</span> labtech / lab123</div>
+                </div>
+            </div>
+            
+            <div class="login-footer">
+                <a href="{{ url_for('index') }}">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

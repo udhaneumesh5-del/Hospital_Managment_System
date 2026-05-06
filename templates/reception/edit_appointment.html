@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% set active_page = 'appointments' %}
+
+{% block title %}Edit Appointment - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Edit Appointment</h2>
+<div class="user-info">
+    <span>{{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h3>Edit Appointment #{{ appointment.appointment_number }}</h3>
+
+        <form method="POST">
+            <div class="form-group">
+                <label>Patient</label>
+                <input type="text" value="{{ appointment.patient_first }} {{ appointment.patient_last }}" readonly disabled>
+            </div>
+
+            <div class="form-group">
+                <label for="doctor_id">Doctor *</label>
+                <select id="doctor_id" name="doctor_id" required>
+                    {% for doctor in doctors %}
+                    <option value="{{ doctor.doctor_id }}"
+                        {% if doctor.doctor_id == appointment.doctor_id %}selected{% endif %}>
+                        Dr. {{ doctor.first_name }} {{ doctor.last_name }} - {{ doctor.specialization }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="appointment_date">Date *</label>
+                    <input type="date" id="appointment_date" name="appointment_date"
+                           value="{{ appointment.appointment_date }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="appointment_time">Time *</label>
+                    <input type="time" id="appointment_time" name="appointment_time"
+                           value="{{ appointment.appointment_time }}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="appointment_type">Appointment Type *</label>
+                <select id="appointment_type" name="appointment_type" required>
+                    <option value="General" {% if appointment.appointment_type == 'General' %}selected{% endif %}>General</option>
+                    <option value="Specialist" {% if appointment.appointment_type == 'Specialist' %}selected{% endif %}>Specialist</option>
+                    <option value="Follow-up" {% if appointment.appointment_type == 'Follow-up' %}selected{% endif %}>Follow-up</option>
+                    <option value="Emergency" {% if appointment.appointment_type == 'Emergency' %}selected{% endif %}>Emergency</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="symptoms">Symptoms</label>
+                <textarea id="symptoms" name="symptoms" rows="4">{{ appointment.symptoms or '' }}</textarea>
+            </div>
+
+            <div class="form-buttons">
+                <button type="submit" class="btn-primary">Update Appointment</button>
+                <a href="{{ url_for('appointment_detail', appointment_id=appointment.appointment_id) }}" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

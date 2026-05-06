@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% set active_page = 'dashboard' %}
+{% set show_role_badge = true %}
+{% set role_display_name = 'Lab Technician' %}
+
+{% block title %}Lab Dashboard - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Laboratory Dashboard</h2>
+<div class="user-info">
+    <span>Welcome, {{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Statistics -->
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-info">
+            <h3>{{ today_stats.pending_requests or 0 }}</h3>
+            <p>Pending Requests</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🔬</div>
+        <div class="stat-info">
+            <h3>{{ today_stats.in_progress or 0 }}</h3>
+            <p>In Progress</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+            <h3>{{ today_stats.completed_today or 0 }}</h3>
+            <p>Completed Today</p>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Tests -->
+<div class="content-card">
+    <div class="card-header">
+        <h3>Pending Lab Requests</h3>
+        <a href="{{ url_for('new_lab_request') }}" class="btn-primary">+ New Request</a>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Patient</th>
+                <th>MR Number</th>
+                <th>Test Name</th>
+                <th>Request Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in pending_requests %}
+            <tr>
+                <td>#{{ request.request_id }}</td>
+                <td>{{ request.first_name }} {{ request.last_name }}</td>
+                <td>{{ request.mr_number }}</td>
+                <td>{{ request.test_name }}</td>
+                <td>{{ request.request_date }}</td>
+                <td>
+                    <a href="{{ url_for('view_lab_request', request_id=request.request_id) }}" class="btn-view">View</a>
+                    <a href="{{ url_for('process_lab_request', request_id=request.request_id) }}" class="btn-primary">Process</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">No pending requests</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Recent Completed -->
+<div class="content-card">
+    <div class="card-header">
+        <h3>Recently Completed</h3>
+        <a href="{{ url_for('lab_requests') }}" class="btn-secondary">View All</a>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Patient</th>
+                <th>Test Name</th>
+                <th>Completed Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in recent_completed %}
+            <tr>
+                <td>#{{ request.request_id }}</td>
+                <td>{{ request.first_name }} {{ request.last_name }}</td>
+                <td>{{ request.test_name }}</td>
+                <td>{{ request.completed_date }}</td>
+                <td>
+                    <a href="{{ url_for('view_lab_request', request_id=request.request_id) }}" class="btn-view">View Report</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 20px;">No completed tests today</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

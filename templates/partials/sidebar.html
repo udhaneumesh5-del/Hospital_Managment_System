@@ -1,0 +1,132 @@
+<!-- Reusable Sidebar Component -->
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <img src="{{ url_for('static', filename='images/hospital.png') }}" alt="Logo">
+        <h3>City Hospital</h3>
+        {% if show_role_badge %}
+        <p class="role-badge {{ session.role }}">{{ role_display_name | default(session.role | capitalize) }}</p>
+        {% endif %}
+    </div>
+    <nav class="sidebar-nav">
+        {% if session.role == 'admin' %}
+            <!-- Admin Navigation -->
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-item {{ 'active' if active_page == 'dashboard' else '' }}">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('patients') }}" class="nav-item {{ 'active' if active_page == 'patients' else '' }}">
+                <span class="nav-icon">👥</span>
+                <span>Patients</span>
+            </a>
+            <a href="{{ url_for('doctors') }}" class="nav-item {{ 'active' if active_page == 'doctors' else '' }}">
+                <span class="nav-icon">👨‍⚕️</span>
+                <span>Doctors</span>
+            </a>
+            <a href="{{ url_for('appointments') }}" class="nav-item {{ 'active' if active_page == 'appointments' else '' }}">
+                <span class="nav-icon">📅</span>
+                <span>Appointments</span>
+            </a>
+            <a href="{{ url_for('billing') }}" class="nav-item {{ 'active' if active_page == 'billing' else '' }}">
+                <span class="nav-icon">💰</span>
+                <span>Billing</span>
+            </a>
+            <a href="{{ url_for('pharmacy') }}" class="nav-item {{ 'active' if active_page == 'pharmacy' else '' }}">
+                <span class="nav-icon">💊</span>
+                <span>Pharmacy</span>
+            </a>
+            <a href="{{ url_for('labtest') }}" class="nav-item {{ 'active' if active_page == 'labtest' else '' }}">
+                <span class="nav-icon">🔬</span>
+                <span>Lab Tests</span>
+            </a>
+
+        {% elif session.role == 'doctor' %}
+            <!-- Doctor Navigation -->
+            <a href="{{ url_for('doctor_dashboard') }}" class="nav-item {{ 'active' if active_page == 'dashboard' else '' }}">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('appointments') }}" class="nav-item {{ 'active' if active_page == 'appointments' else '' }}">
+                <span class="nav-icon">📅</span>
+                <span>My Appointments</span>
+            </a>
+            <a href="{{ url_for('patients') }}" class="nav-item {{ 'active' if active_page == 'patients' else '' }}">
+                <span class="nav-icon">👥</span>
+                <span>My Patients</span>
+            </a>
+            <a href="{{ url_for('prescriptions') }}" class="nav-item {{ 'active' if active_page == 'prescriptions' else '' }}">
+                <span class="nav-icon">📝</span>
+                <span>Prescriptions</span>
+            </a>
+
+        {% elif session.role == 'lab_technician' %}
+            <!-- Lab Technician Navigation -->
+            <a href="{{ url_for('lab_dashboard') }}" class="nav-item {{ 'active' if active_page == 'dashboard' else '' }}">
+                <span class="nav-icon">🔬</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('labtest') }}" class="nav-item {{ 'active' if active_page == 'labtest' else '' }}">
+                <span class="nav-icon">🧪</span>
+                <span>Lab Tests</span>
+            </a>
+            <a href="{{ url_for('lab_requests') }}" class="nav-item {{ 'active' if active_page == 'lab_requests' else '' }}">
+                <span class="nav-icon">📋</span>
+                <span>Test Orders</span>
+            </a>
+
+        {% elif session.role == 'pharmacist' or session.role == 'pharmacy' %}
+            <!-- Pharmacist Navigation -->
+            <a href="{{ url_for('pharmacy_dashboard') }}" class="nav-item {{ 'active' if active_page == 'dashboard' else '' }}">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('pharmacy') }}" class="nav-item {{ 'active' if active_page == 'pharmacy' else '' }}">
+                <span class="nav-icon">💊</span>
+                <span>Inventory</span>
+            </a>
+            <a href="{{ url_for('prescriptions') }}" class="nav-item {{ 'active' if active_page == 'prescriptions' else '' }}">
+                <span class="nav-icon">📋</span>
+                <span>Prescriptions</span>
+            </a>
+
+        {% elif session.role == 'receptionist' %}
+            <!-- Receptionist Navigation -->
+            <a href="{{ url_for('dashboard') }}" class="nav-item {{ 'active' if active_page == 'dashboard' else '' }}">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('patients') }}" class="nav-item {{ 'active' if active_page == 'patients' else '' }}">
+                <span class="nav-icon">👥</span>
+                <span>Patients</span>
+            </a>
+            <a href="{{ url_for('appointments') }}" class="nav-item {{ 'active' if active_page == 'appointments' else '' }}">
+                <span class="nav-icon">📅</span>
+                <span>Appointments</span>
+            </a>
+
+        {% else %}
+            <!-- Default Navigation (fallback) -->
+            <a href="{{ url_for('dashboard') }}" class="nav-item {{ 'active' if active_page == 'dashboard' else '' }}">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('patients') }}" class="nav-item {{ 'active' if active_page == 'patients' else '' }}">
+                <span class="nav-icon">👥</span>
+                <span>Patients</span>
+            </a>
+            <a href="{{ url_for('appointments') }}" class="nav-item {{ 'active' if active_page == 'appointments' else '' }}">
+                <span class="nav-icon">📅</span>
+                <span>Appointments</span>
+            </a>
+        {% endif %}
+
+        <!-- Common Links -->
+        <a href="{{ url_for('change_password') }}" class="nav-item {{ 'active' if active_page == 'settings' else '' }}">
+            <span class="nav-icon">⚙️</span>
+            <span>Settings</span>
+        </a>
+        <a href="{{ url_for('logout') }}" class="nav-item logout">
+            <span class="nav-icon">🚪</span>
+            <span>Logout</span>
+        </a>
+    </nav>
+</aside>

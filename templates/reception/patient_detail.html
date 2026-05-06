@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% set active_page = 'patients' %}
+
+{% block title %}Patient Details - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Patient Details</h2>
+<div class="user-info">
+    <span>{{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <!-- Patient Info -->
+    <div class="detail-card">
+        <h3>Patient Information</h3>
+        <div class="detail-grid">
+            <div><strong>MR Number:</strong> {{ patient.mr_number }}</div>
+            <div><strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }}</div>
+            <div><strong>Date of Birth:</strong> {{ patient.date_of_birth }}</div>
+            <div><strong>Gender:</strong> {{ patient.gender }}</div>
+            <div><strong>Blood Group:</strong> {{ patient.blood_group or 'N/A' }}</div>
+            <div><strong>Phone:</strong> {{ patient.phone }}</div>
+            <div><strong>Email:</strong> {{ patient.email or 'N/A' }}</div>
+            <div><strong>Address:</strong> {{ patient.address }}</div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>{{ patient.total_appointments or 0 }}</h3>
+                <p>Total Visits</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>{{ patient.total_records or 0 }}</h3>
+                <p>Medical Records</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment History -->
+    <div class="detail-card">
+        <h3>Appointment History</h3>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Date</th><th>Doctor</th><th>Specialization</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    {% for apt in appointments %}
+                    <tr>
+                        <td>{{ apt.appointment_date }}</td>
+                        <td>Dr. {{ apt.doctor_first }} {{ apt.doctor_last }}</td>
+                        <td>{{ apt.specialization }}</td>
+                        <td>{{ apt.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button onclick="editPatient()" class="btn-primary">Edit Patient</button>
+        <a href="{{ url_for('appointments') }}?patient={{ patient.patient_id }}" class="btn-success">Book Appointment</a>
+        <a href="{{ url_for('patients') }}" class="btn-secondary">Back to List</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function editPatient() {
+        showNotification('Edit feature coming soon', 'info');
+    }
+</script>
+{% endblock %}

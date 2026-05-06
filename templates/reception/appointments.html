@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% set active_page = 'appointments' %}
+
+{% block title %}Appointments - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Appointments</h2>
+<div class="user-info">
+    <span>{{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h3>All Appointments</h3>
+        <a href="{{ url_for('new_appointment') }}" class="btn-primary">+ New Appointment</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Appt No</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.appointment_number }}</td>
+                    <td>{{ appointment.patient_first }} {{ appointment.patient_last }}</td>
+                    <td>Dr. {{ appointment.doctor_first }} {{ appointment.doctor_last }}</td>
+                    <td>{{ appointment.appointment_date }}</td>
+                    <td>{{ appointment.appointment_time }}</td>
+                    <td>{{ appointment.appointment_type }}</td>
+                    <td>
+                        <span class="status-badge status-{{ appointment.status.lower() }}">
+                            {{ appointment.status }}
+                        </span>
+                    </td>
+                    <td>{{ appointment.payment_status }}</td>
+                    <td>
+                        <a href="{{ url_for('appointment_detail', appointment_id=appointment.appointment_id) }}" class="btn-sm btn-info">View</a>
+                        {% if appointment.status == 'Scheduled' %}
+                        <a href="{{ url_for('update_appointment_status', appointment_id=appointment.appointment_id, status='Completed') }}" class="btn-sm btn-success">Complete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

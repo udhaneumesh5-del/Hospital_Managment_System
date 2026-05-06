@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% set active_page = 'labtest' %}
+
+{% block title %}Edit Lab Test - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Edit Lab Test</h2>
+<div class="user-info">
+    <span>{{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h3>Edit Test: {{ test.test_name }}</h3>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="test_name">Test Name *</label>
+                <input type="text" id="test_name" name="test_name" value="{{ test.test_name }}" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="category">Category *</label>
+                    <select id="category" name="category" required>
+                        <option value="Blood" {{ 'selected' if test.category == 'Blood' }}>Blood</option>
+                        <option value="Urine" {{ 'selected' if test.category == 'Urine' }}>Urine</option>
+                        <option value="X-Ray" {{ 'selected' if test.category == 'X-Ray' }}>X-Ray</option>
+                        <option value="CT Scan" {{ 'selected' if test.category == 'CT Scan' }}>CT Scan</option>
+                        <option value="MRI" {{ 'selected' if test.category == 'MRI' }}>MRI</option>
+                        <option value="Ultrasound" {{ 'selected' if test.category == 'Ultrasound' }}>Ultrasound</option>
+                        <option value="ECG" {{ 'selected' if test.category == 'ECG' }}>ECG</option>
+                        <option value="Other" {{ 'selected' if test.category == 'Other' }}>Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sub_category">Sub Category</label>
+                    <input type="text" id="sub_category" name="sub_category" value="{{ test.sub_category or '' }}" placeholder="e.g., Complete Blood Count">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="specimen_type">Specimen Type</label>
+                    <select id="specimen_type" name="specimen_type">
+                        <option value="">Select Type</option>
+                        <option value="Blood" {{ 'selected' if test.specimen_type == 'Blood' }}>Blood</option>
+                        <option value="Serum" {{ 'selected' if test.specimen_type == 'Serum' }}>Serum</option>
+                        <option value="Plasma" {{ 'selected' if test.specimen_type == 'Plasma' }}>Plasma</option>
+                        <option value="Urine" {{ 'selected' if test.specimen_type == 'Urine' }}>Urine</option>
+                        <option value="Stool" {{ 'selected' if test.specimen_type == 'Stool' }}>Stool</option>
+                        <option value="Sputum" {{ 'selected' if test.specimen_type == 'Sputum' }}>Sputum</option>
+                        <option value="Swab" {{ 'selected' if test.specimen_type == 'Swab' }}>Swab</option>
+                        <option value="Tissue" {{ 'selected' if test.specimen_type == 'Tissue' }}>Tissue</option>
+                        <option value="CSF" {{ 'selected' if test.specimen_type == 'CSF' }}>CSF</option>
+                        <option value="N/A" {{ 'selected' if test.specimen_type == 'N/A' }}>N/A (Imaging)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Price *</label>
+                    <input type="number" id="price" name="price" step="0.01" value="{{ test.price or 0 }}" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="normal_range">Normal Range</label>
+                    <input type="text" id="normal_range" name="normal_range" value="{{ test.normal_range or '' }}" placeholder="e.g., 70-100">
+                </div>
+
+                <div class="form-group">
+                    <label for="unit">Unit</label>
+                    <input type="text" id="unit" name="unit" value="{{ test.unit or '' }}" placeholder="e.g., mg/dL, ml">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="turnaround_time_hours">Turnaround Time (Hours)</label>
+                <input type="number" id="turnaround_time_hours" name="turnaround_time_hours" value="{{ test.turnaround_time_hours or '' }}" placeholder="e.g., 24">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="3" placeholder="Describe the test...">{{ test.description or '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="preparation_instructions">Preparation Instructions</label>
+                <textarea id="preparation_instructions" name="preparation_instructions" rows="3" placeholder="e.g., Fasting required for 8-12 hours...">{{ test.preparation_instructions or '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="instructions">Patient Instructions</label>
+                <textarea id="instructions" name="instructions" rows="3" placeholder="Additional instructions for patients...">{{ test.instructions or '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="is_active" value="1" {{ 'checked' if test.is_active }}>
+                    <span>Active</span>
+                </label>
+            </div>
+
+            <div class="form-buttons">
+                <button type="submit" class="btn-primary">Update Test</button>
+                <a href="{{ url_for('labtest_detail', test_id=test.test_id) }}" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+.checkbox-label input {
+    width: 18px;
+    height: 18px;
+}
+</style>
+{% endblock %}

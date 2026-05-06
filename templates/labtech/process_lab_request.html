@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% set active_page = 'lab_requests' %}
+
+{% block title %}Process Lab Test - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Process Lab Test</h2>
+<div class="user-info">
+    <span>{{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h3>Enter Test Results</h3>
+
+        <!-- Patient & Test Info Summary -->
+        <div class="info-summary">
+            <div class="summary-row">
+                <span class="label">Patient:</span>
+                <span class="value">{{ request.patient_first }} {{ request.patient_last }} ({{ request.mr_number }})</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Test:</span>
+                <span class="value">{{ request.test_name }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Normal Range:</span>
+                <span class="value">{{ request.normal_range or 'N/A' }} {{ request.unit or '' }}</span>
+            </div>
+            {% if request.preparation_instructions %}
+            <div class="summary-row">
+                <span class="label">Instructions:</span>
+                <span class="value">{{ request.preparation_instructions }}</span>
+            </div>
+            {% endif %}
+            {% if request.clinical_notes %}
+            <div class="summary-row">
+                <span class="label">Clinical Notes:</span>
+                <span class="value">{{ request.clinical_notes }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="result_value">Result Value *</label>
+                <div class="input-with-unit">
+                    <input type="text" id="result_value" name="result_value" required
+                           placeholder="Enter test result value">
+                    {% if request.unit %}
+                    <span class="unit-label">{{ request.unit }}</span>
+                    {% endif %}
+                </div>
+                <small class="help-text">Normal range: {{ request.normal_range or 'Not specified' }}</small>
+            </div>
+
+            <div class="form-group">
+                <label for="result_text">Result Description</label>
+                <textarea id="result_text" name="result_text" rows="3"
+                          placeholder="Enter detailed result description if needed..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="is_abnormal" value="1">
+                    <span>Mark as Abnormal Result</span>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="remarks">Remarks / Comments</label>
+                <textarea id="remarks" name="remarks" rows="3"
+                          placeholder="Any additional remarks or recommendations..."></textarea>
+            </div>
+
+            <div class="form-buttons">
+                <button type="submit" class="btn-primary">Save Results</button>
+                <a href="{{ url_for('view_lab_request', request_id=request.request_id) }}" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.info-summary {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border-left: 4px solid #007bff;
+}
+.summary-row {
+    display: flex;
+    margin-bottom: 8px;
+}
+.summary-row:last-child { margin-bottom: 0; }
+.summary-row .label {
+    font-weight: 600;
+    color: #666;
+    min-width: 120px;
+}
+.summary-row .value {
+    color: #333;
+}
+.input-with-unit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.input-with-unit input {
+    flex: 1;
+}
+.unit-label {
+    background: #e9ecef;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: #495057;
+}
+.help-text {
+    color: #6c757d;
+    font-size: 13px;
+    margin-top: 5px;
+}
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+.checkbox-label input {
+    width: 18px;
+    height: 18px;
+}
+</style>
+{% endblock %}

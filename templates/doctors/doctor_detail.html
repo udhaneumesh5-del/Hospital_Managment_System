@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% set active_page = 'doctors' %}
+
+{% block title %}Doctor Details - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Doctor Profile</h2>
+<div class="user-info">
+    <span>{{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="card-header">
+            <h3>Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h3>
+            <div class="card-actions">
+                <a href="{{ url_for('doctors') }}" class="btn-sm btn-secondary">Back</a>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <div><strong>Specialization:</strong> {{ doctor.specialization }}</div>
+            <div><strong>Department:</strong> {{ doctor.dept_name }}</div>
+            <div><strong>Experience:</strong> {{ doctor.experience_years }} years</div>
+            <div><strong>Qualification:</strong> {{ doctor.qualification or 'MBBS, MD' }}</div>
+            <div><strong>Phone:</strong> {{ doctor.phone or 'N/A' }}</div>
+            <div><strong>Email:</strong> {{ doctor.email or 'N/A' }}</div>
+            <div><strong>Consultation Fee:</strong> ₹{{ doctor.consultation_fee or '500' }}</div>
+            <div><strong>Rating:</strong> {{ doctor.avg_rating or '4.5' }} / 5</div>
+        </div>
+
+        <div class="description">
+            <strong>About:</strong>
+            <p>{{ doctor.bio or 'No biography available' }}</p>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{{ url_for('new_appointment') }}?doctor_id={{ doctor.doctor_id }}" class="btn-primary">Book Appointment</a>
+            <a href="{{ url_for('edit_doctor', doctor_id=doctor.doctor_id) }}" class="btn-info">Edit Profile</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

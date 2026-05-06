@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% set active_page = 'pharmacy' %}
+
+{% block title %}Medicine Details - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Medicine Details</h2>
+<div class="user-info">
+    <span>{{ session['username'] }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="card-header">
+            <h3>{{ medicine.medicine_name }}</h3>
+            <div class="card-actions">
+                <a href="{{ url_for('edit_medicine', medicine_id=medicine.medicine_id) }}" class="btn-sm btn-info">✏️ Edit</a>
+                <a href="{{ url_for('pharmacy') }}" class="btn-sm btn-secondary">← Back</a>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <div><strong>Medicine Code:</strong> {{ medicine.medicine_code }}</div>
+            <div><strong>Generic Name:</strong> {{ medicine.generic_name or 'N/A' }}</div>
+            <div><strong>Category:</strong> {{ medicine.category or 'General' }}</div>
+            <div><strong>Manufacturer:</strong> {{ medicine.manufacturer or 'N/A' }}</div>
+            <div><strong>Composition:</strong> {{ medicine.composition or 'N/A' }}</div>
+            <div><strong>Strength:</strong> {{ medicine.strength or 'N/A' }}</div>
+            <div><strong>Selling Price:</strong> ₹{{ "%.2f"|format(medicine.selling_price) }}</div>
+            <div><strong>Purchase Price:</strong> ₹{{ "%.2f"|format(medicine.purchase_price) }}</div>
+            <div><strong>Current Stock:</strong> {{ medicine.current_stock }} {{ medicine.unit or 'units' }}</div>
+            <div><strong>Minimum Stock:</strong> {{ medicine.minimum_stock or 0 }}</div>
+            <div><strong>Reorder Level:</strong> {{ medicine.reorder_level or 0 }}</div>
+            <div><strong>Expiry Date:</strong> {{ medicine.expiry_date or 'N/A' }}</div>
+            <div><strong>Batch Number:</strong> {{ medicine.batch_number or 'N/A' }}</div>
+            <div><strong>Requires Prescription:</strong> {{ 'Yes' if medicine.requires_prescription else 'No' }}</div>
+        </div>
+
+        <div class="description">
+            <strong>Description:</strong>
+            <p>{{ medicine.description or 'No description available' }}</p>
+        </div>
+    </div>
+
+    <!-- Update Stock Form -->
+    <div class="detail-card">
+        <h3>📦 Update Stock</h3>
+        <form method="POST" action="{{ url_for('update_medicine_stock', medicine_id=medicine.medicine_id) }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Quantity:</label>
+                    <input type="number" name="quantity" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>Transaction Type:</label>
+                    <select name="transaction_type">
+                        <option value="add">➕ Add Stock</option>
+                        <option value="remove">➖ Remove Stock</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Remarks:</label>
+                <input type="text" name="remarks" placeholder="e.g., New purchase, Dispensed">
+            </div>
+            <button type="submit" class="btn-primary">Update Stock</button>
+        </form>
+    </div>
+
+    <!-- Stock History -->
+    <div class="detail-card">
+        <h3>📜 Stock History</h3>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Quantity</th>
+                        <th>Type</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in stock_history %}
+                    <tr>
+                        <td>{{ transaction.transaction_date }}</td>
+                        <td class="{% if transaction.quantity < 0 %}text-danger{% else %}text-success{% endif %}">
+                            {{ '+' if transaction.quantity > 0 else '' }}{{ transaction.quantity }}
+                        </td>
+                        <td>{{ transaction.transaction_type }}</td>
+                        <td>{{ transaction.remarks or '-' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No stock history available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% set active_page = 'dashboard' %}
+{% set show_role_badge = true %}
+{% set role_display_name = 'Pharmacist' %}
+
+{% block title %}Pharmacy Dashboard - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Pharmacy Dashboard</h2>
+<div class="user-info">
+    <span>{{ session['username'] }} ({{ session['role'] }})</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">💊</div>
+        <div class="stat-info">
+            <h3>{{ total_medicines or 0 }}</h3>
+            <p>Total Medicines</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+            <h3>{{ low_stock or 0 }}</h3>
+            <p>Low Stock Items</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-info">
+            <h3>{{ out_of_stock or 0 }}</h3>
+            <p>Out of Stock</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+            <h3>₹{{ total_value or 0 }}</h3>
+            <p>Total Stock Value</p>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="content-card">
+    <div class="card-header">
+        <h3>Quick Actions</h3>
+    </div>
+    <div class="action-buttons">
+        <a href="{{ url_for('new_medicine') }}" class="btn-primary">➕ Add New Medicine</a>
+        <a href="{{ url_for('pharmacy') }}" class="btn-secondary">📦 Manage Inventory</a>
+        <a href="{{ url_for('prescriptions') }}" class="btn-info">📋 View Prescriptions</a>
+    </div>
+</div>
+
+<!-- Low Stock Alert -->
+{% if low_stock_items %}
+<div class="content-card">
+    <div class="card-header">
+        <h3>⚠️ Low Stock Alert</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Current Stock</th>
+                    <th>Minimum Required</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in low_stock_items %}
+                <tr>
+                    <td>{{ item.medicine_name }}</td>
+                    <td class="{% if item.quantity <= 0 %}text-danger{% elif item.quantity <= item.min_stock %}text-warning{% endif %}">
+                        {{ item.quantity }}
+                    </td>
+                    <td>{{ item.min_stock }}</td>
+                    <td>
+                        {% if item.quantity <= 0 %}
+                        <span class="status-badge status-cancelled">Out of Stock</span>
+                        {% else %}
+                        <span class="status-badge status-scheduled">Low Stock</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('medicine_detail', medicine_id=item.medicine_id) }}" class="btn-sm btn-info">Restock</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Prescriptions -->
+<div class="content-card">
+    <div class="card-header">
+        <h3>Recent Prescriptions</h3>
+        <a href="{{ url_for('prescriptions') }}" class="btn-link">View All →</a>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Prescription No</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prescription in recent_prescriptions %}
+                <tr>
+                    <td>{{ prescription.prescription_number }}</td>
+                    <td>{{ prescription.patient_name }}</td>
+                    <td>Dr. {{ prescription.doctor_name }}</td>
+                    <td>{{ prescription.prescription_date }}</td>
+                    <td>
+                        <span class="status-badge status-{{ prescription.status.lower() }}">
+                            {{ prescription.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('view_prescription', prescription_id=prescription.prescription_id) }}" class="btn-sm btn-info">View</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">No prescriptions found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

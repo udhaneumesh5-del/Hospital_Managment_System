@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% set active_page = 'labtests' %}
+
+{% block title %}Lab Tests - City General Hospital{% endblock %}
+
+{% block header_title %}
+<h2>Laboratory Tests</h2>
+<div class="user-info">
+    <span>{{ session['username'] }} ({{ session['role'] }})</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="lab-stats-grid">
+    <div class="lab-stat-widget">
+        <div class="stat-value">{{ tests|length }}</div>
+        <div class="stat-label">Total Tests</div>
+    </div>
+    <div class="lab-stat-widget">
+        <div class="stat-value">
+            {% set active_count = tests|selectattr('is_active')|list|length %}
+            {{ active_count }}
+        </div>
+        <div class="stat-label">Active Tests</div>
+    </div>
+    <div class="lab-stat-widget">
+        <div class="stat-value">
+            {% set total_price = tests|sum(attribute='price') %}
+            {{ "%.0f"|format(total_price) }}
+        </div>
+        <div class="stat-label">Total Value</div>
+    </div>
+    <div class="lab-stat-widget">
+        <div class="stat-value">
+            {% set categories = tests|map(attribute='category')|unique|list|length %}
+            {{ categories }}
+        </div>
+        <div class="stat-label">Categories</div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="lab-quick-actions">
+    <a href="{{ url_for('new_labtest') }}" class="lab-quick-btn">Add New Test</a>
+    <a href="{{ url_for('new_lab_request') }}" class="lab-quick-btn">New Test Request</a>
+    <a href="{{ url_for('lab_requests') }}" class="lab-quick-btn">Pending Requests</a>
+    <button onclick="window.print()" class="lab-quick-btn">Print Report</button>
+</div>
+
+<div class="content-card">
+    <div class="card-header">
+        <h3>Test Management</h3>
+        <div class="header-actions">
+            <a href="{{ url_for('new_labtest') }}" class="btn-primary">Add New Test</a>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="filter-section">
+        <form method="GET" action="{{ url_for('labtest') }}" class="filter-form">
+            <div class="filter-group">
+                <label>Search:</label>
+                <input type="text" name="search" placeholder="Test name or code..." value="{{ search_query }}">
+            </div>
+            <div class="filter-group">
+                <label>Category:</label>
+                <select name="category">
+                    <option value="">All Categories</option>
+                    <option value="Blood" {% if category == 'Blood' %}selected{% endif %}>Blood</option>
+                    <option value="Urine" {% if category == 'Urine' %}selected{% endif %}>Urine</option>
+                    <option value="X-Ray" {% if category == 'X-Ray' %}selected{% endif %}>X-Ray</option>
+                    <option value="CT Scan" {% if category == 'CT Scan' %}selected{% endif %}>CT Scan</option>
+                    <option value="MRI" {% if category == 'MRI' %}selected{% endif %}>MRI</option>
+                    <option value="Ultrasound" {% if category == 'Ultrasound' %}selected{% endif %}>Ultrasound</option>
+                    <option value="ECG" {% if category == 'ECG' %}selected{% endif %}>ECG</option>
+                    <option value="Pathology" {% if category == 'Pathology' %}selected{% endif %}>Pathology</option>
+                    <option value="Microbiology" {% if category == 'Microbiology' %}selected{% endif %}>Microbiology</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Price Range:</label>
+                <select name="price_range">
+                    <option value="">All</option>
+                    <option value="0-500" {% if price_range == '0-500' %}selected{% endif %}>0 - 500</option>
+                    <option value="501-1000" {% if price_range == '501-1000' %}selected{% endif %}>501 - 1000</option>
+                    <option value="1001-2000" {% if price_range == '1001-2000' %}selected{% endif %}>1001 - 2000</option>
+                    <option value="2001+" {% if price_range == '2001+' %}selected{% endif %}>2001+</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button type="submit" class="btn-secondary">Filter</button>
+                <a href="{{ url_for('labtest') }}" class="btn-link">Clear</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs">
+        <button class="tab-btn active" onclick="filterByCategory('all')">All Tests</button>
+        <button class="tab-btn" onclick="filterByCategory('Blood')">Blood</button>
+        <button class="tab-btn" onclick="filterByCategory('Urine')">Urine</button>
+        <button class="tab-btn" onclick="filterByCategory('X-Ray')">X-Ray</button>
+        <button class="tab-btn" onclick="filterByCategory('CT Scan')">CT Scan</button>
+        <button class="tab-btn" onclick="filterByCategory('MRI')">MRI</button>
+        <button class="tab-btn" onclick="filterByCategory('Ultrasound')">Ultrasound</button>
+        <button class="tab-btn" onclick="filterByCategory('ECG')">ECG</button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="data-table lab-table" id="labTestsTable">
+            <thead>
+                <tr>
+                    <th>Test Code</th>
+                    <th>Test Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Normal Range</th>
+                    <th>Reporting Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in tests %}
+                <tr data-category="{{ test.category }}">
+                    <td>
+                        <span class="test-code">{{ test.test_code }}</span>
+                    </td>
+                    <td>
+                        <strong>{{ test.test_name }}</strong>
+                        {% if test.sub_category %}
+                        <br><small class="text-muted">{{ test.sub_category }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="category-badge">{{ test.category or 'General' }}</span>
+                    </td>
+                    <td class="test-price">{{ "%.2f"|format(test.price) }}</td>
+                    <td>{{ test.normal_range or 'N/A' }}</td>
+                    <td>
+                        <span class="reporting-time">
+                            {{ test.reporting_time or '24 hours' }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if test.is_active %}
+                        <span class="test-status active">Active</span>
+                        {% else %}
+                        <span class="test-status inactive">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="action-buttons">
+                        <a href="{{ url_for('labtest_detail', test_id=test.test_id) }}"
+                           class="btn-sm btn-info" title="View Details">View</a>
+                        <a href="{{ url_for('edit_labtest', test_id=test.test_id) }}"
+                           class="btn-sm btn-success" title="Edit">Edit</a>
+                        <a href="{{ url_for('new_lab_request') }}?test_id={{ test.test_id }}"
+                           class="btn-sm btn-primary" title="Request Test">Request</a>
+                        {% if session.role == 'admin' %}
+                        <button onclick="confirmDelete({{ test.test_id }}, '{{ test.test_name }}')"
+                                class="btn-sm btn-danger" title="Delete">Delete</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">
+                        <div class="no-data">
+                            <span class="no-data-icon">No lab tests found</span>
+                            <p>No lab tests found</p>
+                            <a href="{{ url_for('new_labtest') }}" class="btn-primary">Add Your First Test</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Export Options -->
+    <div class="export-options">
+        <button onclick="exportToCSV()" class="btn-secondary">Export to CSV</button>
+        <button onclick="exportToPDF()" class="btn-secondary">Export to PDF</button>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h3>Confirm Delete</h3>
+        <p>Are you sure you want to delete <strong id="testName"></strong>?</p>
+        <p class="text-warning">This action cannot be undone!</p>
+        <form id="deleteForm" method="POST">
+            <div class="modal-buttons">
+                <button type="button" onclick="closeModal()" class="btn-secondary">Cancel</button>
+                <button type="submit" class="btn-danger">Yes, Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Success/Error Toast Notification -->
+<div id="toast" class="toast-notification" style="display:none;">
+    <span id="toastMessage"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Filter by category
+    function filterByCategory(category) {
+        const rows = document.querySelectorAll('#labTestsTable tbody tr');
+        const tabs = document.querySelectorAll('.tab-btn');
+
+        // Update active tab
+        tabs.forEach(tab => tab.classList.remove('active'));
+        event.target.classList.add('active');
+
+        rows.forEach(row => {
+            if (category === 'all' || row.getAttribute('data-category') === category) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        showToast(`Showing ${category === 'all' ? 'all' : category} tests`);
+    }
+
+    // Confirm delete
+    function confirmDelete(testId, testName) {
+        const modal = document.getElementById('deleteModal');
+        const form = document.getElementById('deleteForm');
+        const nameSpan = document.getElementById('testName');
+        form.action = `/labtest/${testId}/delete`;
+        nameSpan.textContent = testName;
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        toastMessage.textContent = message;
+        toast.className = `toast-notification toast-${type}`;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    // Export to CSV
+    function exportToCSV() {
+        const table = document.getElementById('labTestsTable');
+        const rows = table.querySelectorAll('tr');
+        let csv = [];
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('th, td');
+            const rowData = Array.from(cells).map(cell => {
+                return '"' + cell.innerText.replace(/"/g, '""') + '"';
+            }).join(',');
+            csv.push(rowData);
+        });
+
+        const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'lab_tests_export.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        showToast('Exported to CSV successfully!');
+    }
+
+    // Export to PDF (simple print)
+    function exportToPDF() {
+        window.print();
+    }
+
+    // Search functionality
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function(e) {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#labTestsTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('deleteModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Animate stats on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const statValues = document.querySelectorAll('.stat-value');
+        statValues.forEach(stat => {
+            const finalValue = stat.innerText;
+            stat.innerText = '0';
+            let current = 0;
+            const increment = finalValue.replace('₹', '') / 50;
+            const interval = setInterval(() => {
+                current += increment;
+                if (current >= finalValue.replace('₹', '')) {
+                    stat.innerText = finalValue;
+                    clearInterval(interval);
+                } else {
+                    stat.innerText = Math.floor(current);
+                }
+            }, 20);
+        });
+    });
+</script>
+{% endblock %}
