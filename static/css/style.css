@@ -695,13 +695,13 @@ body {
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background:white;
     border-radius: 10px;
     overflow: hidden;
 }
 
 .data-table th {
-    background: var(--primary-color);
+    background-color: #226fe3 !important;
     color: white;
     padding: 1rem;
     text-align: left;
@@ -920,7 +920,7 @@ body {
 .detail-card h3 {
     margin-top: 0;
     margin-bottom: 15px;
-    color: #333;
+    color: white;
     border-bottom: 2px solid #007bff;
     padding-bottom: 10px;
 }
@@ -933,14 +933,14 @@ body {
 
 .detail-grid div {
     padding: 8px;
-    background: #f8f9fa;
+    background: white;
     border-radius: 5px;
 }
 
 .symptoms {
     margin-top: 15px;
     padding: 10px;
-    background: #f8f9fa;
+    background: #7f23b8;
     border-radius: 5px;
 }
 
@@ -1240,7 +1240,7 @@ body {
 }
 
 .lab-report-patient-info {
-    background: #f8f9fa;
+    background: #34cbc9;
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 20px;

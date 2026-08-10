@@ -311,10 +311,10 @@ class LabTestModule:
                 JOIN lab_tests lt ON lr.test_id = lt.test_id
                 WHERE lr.request_id = %s
             """, (request_id,))
-            request = cursor.fetchone()
+            lab_request = cursor.fetchone()
             
             # Get test results if completed
-            if request and request['status'] == 'Completed':
+            if lab_request and lab_request['status'] == 'Completed':
                 cursor.execute("""
                     SELECT * FROM lab_results WHERE request_id = %s
                 """, (request_id,))
@@ -324,12 +324,14 @@ class LabTestModule:
             
             db.close()
             
-            if not request:
+            # FIX 1: Check lab_request instead of request
+            if not lab_request:
                 flash('Lab request not found!', 'error')
                 return redirect(url_for('lab_requests'))
             
+            # FIX 2: Pass lab_request and result to template
             return render_template('labtech/view_lab_request.html',
-                                 request=request,
+                                 lab_request=lab_request,
                                  result=result)
         
         @self.app.route('/lab_request/<int:request_id>/process', methods=['GET', 'POST'])
@@ -385,14 +387,17 @@ class LabTestModule:
                 JOIN lab_tests lt ON lr.test_id = lt.test_id
                 WHERE lr.request_id = %s
             """, (request_id,))
-            request = cursor.fetchone()
+            lab_request = cursor.fetchone()
             db.close()
             
-            if not request:
+            # FIX 3: Check lab_request instead of request
+            if not lab_request:
                 flash('Lab request not found!', 'error')
                 return redirect(url_for('lab_requests'))
             
-            return render_template('labtech/process_lab_request.html', request=request)
+            # FIX 4: Pass lab_request to template
+            return render_template('labtech/process_lab_request.html',
+                                 lab_request=lab_request)
         
         @self.app.route('/lab_request/<int:request_id>/cancel', methods=['POST'])
         def cancel_lab_request(request_id):

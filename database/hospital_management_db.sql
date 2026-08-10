@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Apr 27, 2026 at 11:29 PM
+-- Host: localhost
+-- Generation Time: Aug 10, 2026 at 01:06 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -78,6 +78,14 @@ CREATE TABLE `admissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `admissions`
+--
+
+INSERT INTO `admissions` (`admission_id`, `admission_number`, `patient_id`, `room_id`, `doctor_id`, `admission_date`, `discharge_date`, `admission_type`, `diagnosis`, `treatment_plan`, `status`, `discharge_summary`, `created_by`, `created_at`, `updated_at`) VALUES
+(1, 'ADM001', 1, 3, 1, '2026-06-01 10:00:00', NULL, 'Elective', 'Heart Checkup', 'Cardiac Monitoring', 'Admitted', NULL, 1, '2026-06-01 13:36:04', '2026-06-01 13:36:04'),
+(2, 'ADM002', 2, 4, 2, '2026-06-02 11:30:00', NULL, 'Emergency', 'Severe Headache', 'Neurological Observation', 'Admitted', NULL, 1, '2026-06-01 13:36:04', '2026-06-01 13:36:04');
+
+--
 -- Triggers `admissions`
 --
 DELIMITER $$
@@ -89,24 +97,6 @@ CREATE TRIGGER `update_room_occupancy` AFTER INSERT ON `admissions` FOR EACH ROW
 END
 $$
 DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ambulances`
---
-
-CREATE TABLE `ambulances` (
-  `ambulance_id` int(11) NOT NULL,
-  `vehicle_number` varchar(20) NOT NULL,
-  `driver_name` varchar(100) DEFAULT NULL,
-  `driver_phone` varchar(20) DEFAULT NULL,
-  `ambulance_type` enum('Basic','Advanced','ICU') DEFAULT 'Basic',
-  `equipment` text DEFAULT NULL,
-  `is_available` tinyint(1) DEFAULT 1,
-  `last_maintenance` date DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -142,41 +132,11 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`appointment_id`, `appointment_number`, `patient_id`, `doctor_id`, `appointment_date`, `appointment_time`, `end_time`, `appointment_type`, `status`, `payment_status`, `symptoms`, `notes`, `prescription`, `is_emergency`, `waiting_number`, `cancellation_reason`, `reschedule_reason`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 'APT20241201001', 1, 1, '2026-04-20', '10:00:00', NULL, 'Consultation', 'Completed', 'Pending', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, '2026-04-20 16:59:34', '2026-04-27 20:59:47'),
-(2, 'APT20241201002', 2, 2, '2026-04-20', '11:30:00', NULL, 'Consultation', 'Completed', 'Pending', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, '2026-04-20 16:59:34', '2026-04-27 20:59:55'),
-(3, '', 2, 2, '2026-04-27', '02:41:44', NULL, '', 'Completed', 'Pending', 'Prescription Visit', NULL, NULL, 0, NULL, NULL, NULL, NULL, '2026-04-27 21:11:44', '2026-04-27 21:11:44');
-
--- --------------------------------------------------------
-
---
--- Stand-in structure for view `appointment_summary`
--- (See below for the actual view)
---
-CREATE TABLE `appointment_summary` (
-`appointment_id` int(11)
-,`appointment_number` varchar(20)
-,`patient_id` int(11)
-,`doctor_id` int(11)
-,`appointment_date` date
-,`appointment_time` time
-,`end_time` time
-,`appointment_type` enum('Consultation','Follow-up','Emergency','Surgery','Checkup')
-,`status` enum('Scheduled','Confirmed','In-Progress','Completed','Cancelled','No-Show','Rescheduled')
-,`payment_status` enum('Pending','Paid','Partial','Insurance')
-,`symptoms` text
-,`notes` text
-,`prescription` text
-,`is_emergency` tinyint(1)
-,`waiting_number` int(11)
-,`cancellation_reason` text
-,`reschedule_reason` text
-,`created_by` int(11)
-,`created_at` timestamp
-,`updated_at` timestamp
-,`patient_name` varchar(101)
-,`doctor_name` varchar(105)
-,`specialization` varchar(100)
-);
+(1, 'APT20241201001', 1, 1, '2026-04-20', '10:00:00', NULL, 'Consultation', 'Scheduled', 'Pending', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, '2026-04-20 16:59:34', '2026-04-20 16:59:34'),
+(2, 'APT20241201002', 2, 2, '2026-04-20', '11:30:00', NULL, 'Consultation', 'Scheduled', 'Pending', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, '2026-04-20 16:59:34', '2026-04-20 16:59:34'),
+(3, 'APT000003', 3, 2, '2026-05-08', '04:15:00', NULL, '', 'Scheduled', 'Pending', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, '2026-05-08 09:45:13', '2026-05-08 09:45:13'),
+(4, 'APT000004', 3, 1, '2026-05-23', '18:40:00', NULL, '', 'Scheduled', 'Pending', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, '2026-05-23 10:10:58', '2026-05-23 10:10:58'),
+(5, '', 6, 2, '2026-06-16', '13:33:01', NULL, '', 'Completed', 'Pending', 'Prescription Visit', NULL, NULL, 0, NULL, NULL, NULL, NULL, '2026-06-16 08:03:01', '2026-06-16 08:03:01');
 
 -- --------------------------------------------------------
 
@@ -257,39 +217,6 @@ CREATE TABLE `billing_items` (
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `billing_summary`
--- (See below for the actual view)
---
-CREATE TABLE `billing_summary` (
-`bill_id` int(11)
-,`bill_number` varchar(20)
-,`patient_id` int(11)
-,`appointment_id` int(11)
-,`bill_date` date
-,`due_date` date
-,`subtotal` decimal(10,2)
-,`tax_amount` decimal(10,2)
-,`discount_amount` decimal(10,2)
-,`discount_reason` varchar(255)
-,`total_amount` decimal(10,2)
-,`amount_paid` decimal(10,2)
-,`balance_amount` decimal(10,2)
-,`payment_status` enum('Paid','Pending','Partial','Refunded','Written Off')
-,`payment_method` enum('Cash','Credit Card','Debit Card','UPI','Net Banking','Insurance','Cheque')
-,`payment_date` date
-,`transaction_id` varchar(100)
-,`insurance_claim_id` varchar(100)
-,`notes` text
-,`created_by` int(11)
-,`created_at` timestamp
-,`updated_at` timestamp
-,`patient_name` varchar(101)
-,`mr_number` varchar(20)
-);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `departments`
 --
 
@@ -363,52 +290,7 @@ CREATE TABLE `doctors` (
 INSERT INTO `doctors` (`doctor_id`, `user_id`, `doctor_code`, `first_name`, `last_name`, `specialization`, `department_id`, `sub_specialization`, `qualification`, `experience_years`, `phone`, `email`, `consultation_fee`, `follow_up_fee`, `available_days`, `available_time_start`, `available_time_end`, `slot_duration`, `chamber_number`, `bio`, `profile_image`, `is_available`, `rating`, `total_patients`, `created_at`, `updated_at`) VALUES
 (1, NULL, 'DOC001', 'Sarah', 'Smith', 'Cardiology', 1, NULL, 'MD, DM Cardiology', 12, '9876543210', 'smith@hospital.com', 1200.00, NULL, NULL, NULL, NULL, 15, NULL, NULL, NULL, 1, 0.00, 0, '2026-04-20 16:59:34', '2026-04-20 16:59:34'),
 (2, NULL, 'DOC002', 'James', 'Johnson', 'Neurology', 2, NULL, 'MD, DM Neurology', 10, '9876543211', 'johnson@hospital.com', 1100.00, NULL, NULL, NULL, NULL, 15, NULL, NULL, NULL, 1, 0.00, 0, '2026-04-20 16:59:34', '2026-04-20 16:59:34'),
-(3, NULL, 'DOC20260428012221', 'tushar', 'jamdhade', 'md', 9, NULL, 'mbbs', 12, '8258555885', '', 100.00, NULL, 'mon', '10:10:00', '22:10:00', 15, NULL, 'okk', NULL, 1, 0.00, 0, '2026-04-27 19:52:21', '2026-04-27 19:52:21');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `insurance_claims`
---
-
-CREATE TABLE `insurance_claims` (
-  `claim_id` int(11) NOT NULL,
-  `claim_number` varchar(50) NOT NULL,
-  `patient_id` int(11) NOT NULL,
-  `insurance_provider` varchar(100) DEFAULT NULL,
-  `policy_number` varchar(100) DEFAULT NULL,
-  `claim_amount` decimal(10,2) DEFAULT NULL,
-  `approved_amount` decimal(10,2) DEFAULT NULL,
-  `status` enum('Pending','Approved','Rejected','Processed') DEFAULT 'Pending',
-  `claim_date` date DEFAULT NULL,
-  `approval_date` date DEFAULT NULL,
-  `remarks` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `inventory`
---
-
-CREATE TABLE `inventory` (
-  `item_id` int(11) NOT NULL,
-  `item_code` varchar(50) NOT NULL,
-  `item_name` varchar(200) NOT NULL,
-  `category` varchar(100) DEFAULT NULL,
-  `sub_category` varchar(100) DEFAULT NULL,
-  `unit` varchar(20) DEFAULT NULL,
-  `quantity` int(11) NOT NULL DEFAULT 0,
-  `reorder_level` int(11) DEFAULT 10,
-  `unit_price` decimal(10,2) DEFAULT NULL,
-  `supplier` varchar(200) DEFAULT NULL,
-  `batch_number` varchar(50) DEFAULT NULL,
-  `expiry_date` date DEFAULT NULL,
-  `location` varchar(100) DEFAULT NULL,
-  `notes` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+(3, NULL, 'DOC20260525152905', 'Dr. Rajesh Sir', 'Jagtap', 'Orthopedics', 4, NULL, 'MBBS', 2, '9299281911', 'rajeshjagtap@gmail.com', 500.00, NULL, 'Mon, Tue, Wed', '11:01:00', '17:00:00', 15, NULL, '', NULL, 1, 0.00, 0, '2026-05-25 09:59:05', '2026-05-25 09:59:05');
 
 -- --------------------------------------------------------
 
@@ -474,6 +356,17 @@ CREATE TABLE `lab_requests` (
   `completed_by` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `lab_requests`
+--
+
+INSERT INTO `lab_requests` (`request_id`, `request_number`, `patient_id`, `doctor_id`, `test_id`, `appointment_id`, `request_date`, `priority`, `clinical_notes`, `status`, `completed_date`, `completed_by`, `created_at`) VALUES
+(1, 'REQ20260525172221', 4, 2, 1, 0, '0000-00-00', 'Urgent', '', 'Pending', NULL, NULL, '2026-05-25 11:52:21'),
+(2, 'REQ20260525175152', 4, 2, 1, 0, '0000-00-00', 'Urgent', '', 'Pending', NULL, NULL, '2026-05-25 12:21:52'),
+(3, 'REQ20260525180355', 4, 2, 1, 0, '0000-00-00', 'Urgent', '', 'Pending', NULL, NULL, '2026-05-25 12:33:55'),
+(4, 'REQ20260525180433', 5, 2, 2, 0, '0000-00-00', 'Routine', '', 'Pending', NULL, NULL, '2026-05-25 12:34:33'),
+(5, 'REQ20260616133352', 6, 2, 2, 1, '0000-00-00', 'Routine', '', 'Pending', NULL, NULL, '2026-06-16 08:03:52');
 
 -- --------------------------------------------------------
 
@@ -567,7 +460,7 @@ CREATE TABLE `medicines` (
 --
 
 INSERT INTO `medicines` (`medicine_id`, `medicine_code`, `medicine_name`, `generic_name`, `category`, `manufacturer`, `composition`, `strength`, `dosage_form`, `unit`, `purchase_price`, `selling_price`, `tax_rate`, `current_stock`, `minimum_stock`, `maximum_stock`, `reorder_level`, `expiry_date`, `batch_number`, `requires_prescription`, `storage_conditions`, `description`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'MED001', 'Paracetamol 500mg', 'Acetaminophen', 'Analgesic', 'Cipla', NULL, NULL, 'Tablet', 'piece', 2.50, 5.00, 0.00, 995, 50, 500, 20, '2025-12-31', NULL, 1, NULL, NULL, 1, '2026-04-20 16:59:34', '2026-04-27 21:13:32'),
+(1, 'MED001', 'Paracetamol 500mg', 'Acetaminophen', 'Analgesic', 'Cipla', NULL, NULL, 'Tablet', 'piece', 2.50, 5.00, 0.00, 1000, 50, 500, 20, '2025-12-31', NULL, 1, NULL, NULL, 1, '2026-04-20 16:59:34', '2026-04-20 16:59:34'),
 (2, 'MED002', 'Amoxicillin 500mg', 'Amoxicillin', 'Antibiotic', 'GSK', NULL, NULL, 'Capsule', 'piece', 15.00, 25.00, 0.00, 500, 30, 500, 20, '2025-10-31', NULL, 1, NULL, NULL, 1, '2026-04-20 16:59:34', '2026-04-20 16:59:34'),
 (3, 'MED003', 'Cetrizine 10mg', 'Cetrizine', 'Antihistamine', 'Sun Pharma', NULL, NULL, 'Tablet', 'piece', 3.00, 8.00, 0.00, 800, 40, 500, 20, '2025-11-30', NULL, 1, NULL, NULL, 1, '2026-04-20 16:59:34', '2026-04-20 16:59:34'),
 (4, 'MED20260427220404', 'Para', 'PARA', 'Tablet', '1', NULL, NULL, '', 'piece', 0.00, 109.99, 0.00, 3, 10, 500, 20, '2026-04-30', '1', 1, NULL, 'Medicine de', 1, '2026-04-27 16:34:04', '2026-04-27 16:36:45');
@@ -615,44 +508,10 @@ CREATE TABLE `patients` (
 INSERT INTO `patients` (`patient_id`, `user_id`, `mr_number`, `first_name`, `last_name`, `date_of_birth`, `gender`, `blood_group`, `phone`, `alternate_phone`, `email`, `address`, `city`, `state`, `pincode`, `emergency_contact_name`, `emergency_contact_phone`, `emergency_contact_relation`, `marital_status`, `occupation`, `insurance_provider`, `insurance_number`, `profile_image`, `is_active`, `created_at`, `updated_at`, `status`) VALUES
 (1, NULL, 'MR10001', 'John', 'Doe', '1990-05-15', 'Male', 'O+', '9988776655', NULL, 'john@gmail.com', '123 Main St, City', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-04-20 16:59:34', '2026-04-20 16:59:34', 'Active'),
 (2, NULL, 'MR10002', 'Jane', 'Doe', '1992-08-20', 'Female', 'A+', '9988776644', NULL, 'jane@gmail.com', '123 Main St, City', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-04-20 16:59:34', '2026-04-20 16:59:34', 'Active'),
-(3, NULL, 'MR20260428020156', 'tushar', 'jamdhade', '2026-04-28', 'Male', 'A+', '8585858585', NULL, '', 'Dhamori Newasa Aahilyanagar', 'Newasa Aahilyanagar', 'Maharashtra', NULL, '7875515454541541', '', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-04-27 20:31:56', '2026-04-27 20:31:56', 'Active');
-
--- --------------------------------------------------------
-
---
--- Stand-in structure for view `patient_details`
--- (See below for the actual view)
---
-CREATE TABLE `patient_details` (
-`patient_id` int(11)
-,`user_id` int(11)
-,`mr_number` varchar(20)
-,`first_name` varchar(50)
-,`last_name` varchar(50)
-,`date_of_birth` date
-,`gender` enum('Male','Female','Other')
-,`blood_group` enum('A+','A-','B+','B-','AB+','AB-','O+','O-')
-,`phone` varchar(20)
-,`alternate_phone` varchar(20)
-,`email` varchar(100)
-,`address` text
-,`city` varchar(50)
-,`state` varchar(50)
-,`pincode` varchar(10)
-,`emergency_contact_name` varchar(100)
-,`emergency_contact_phone` varchar(20)
-,`emergency_contact_relation` varchar(50)
-,`marital_status` enum('Single','Married','Divorced','Widowed')
-,`occupation` varchar(100)
-,`insurance_provider` varchar(100)
-,`insurance_number` varchar(50)
-,`profile_image` varchar(255)
-,`is_active` tinyint(1)
-,`created_at` timestamp
-,`updated_at` timestamp
-,`age` bigint(21)
-,`full_name` varchar(101)
-);
+(3, NULL, 'MR20260508151428', 'Umesh', 'Udhane', '2026-05-08', 'Male', '', '09356281911', NULL, 'udhaneumesh5@gmail.com', 'Pimpri-ghumri Post -wahira Tal-Ashti District -Beed', 'Beed', 'Maharashtra', NULL, '9356281911', '93562819111', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-05-08 09:44:28', '2026-05-08 09:44:28', 'Active'),
+(4, NULL, 'MR20260525155745', 'Sachin ', 'Kambale', '2004-02-01', 'Male', 'B+', '3245282911', NULL, 'sachinkambale@gmail.com', 'Ahilyanagar Tal-Nagar Dist-Beed ', 'Ahilyanagar', 'Maharastra', NULL, '3245233456', '', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-05-25 10:27:45', '2026-05-25 10:27:45', 'Active'),
+(5, NULL, 'MR20260525160237', 'Suraj', 'Thalange', '2000-09-02', 'Male', 'A+', '3245675467', NULL, 'surajthalange@gmail.com', 'Pune', 'Pune', 'Maharashtra', NULL, '4356765434', '', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-05-25 10:32:37', '2026-05-25 10:32:37', 'Active'),
+(6, NULL, 'MR20260616133145', 'Tushar ', 'Jamdhade', '2026-06-02', 'Male', 'A+', '9130506757', NULL, 'tusharjamdhade@gmail.com', '\r\nAt Nagar ', 'Nagar', 'Maharastra', NULL, '9130506714', '', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-06-16 08:01:45', '2026-06-16 08:01:45', 'Active');
 
 -- --------------------------------------------------------
 
@@ -680,7 +539,8 @@ CREATE TABLE `prescriptions` (
 --
 
 INSERT INTO `prescriptions` (`prescription_id`, `prescription_number`, `appointment_id`, `patient_id`, `doctor_id`, `prescription_date`, `notes`, `valid_until`, `is_dispensed`, `dispensed_date`, `created_at`, `status`) VALUES
-(2, 'RX20260428024144', 3, 2, 2, '2026-04-27', 'okk', NULL, 0, NULL, '2026-04-27 21:11:44', 'Dispensed');
+(1, 'RX20260508153321', 3, 3, 1, '2026-05-08', '', NULL, 0, NULL, '2026-05-08 10:03:21', 'Pending'),
+(2, 'RX20260616133301', 5, 6, 2, '2026-06-16', 'no', NULL, 0, NULL, '2026-06-16 08:03:01', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -710,7 +570,9 @@ CREATE TABLE `prescription_items` (
 --
 
 INSERT INTO `prescription_items` (`presc_item_id`, `prescription_id`, `medicine_id`, `dosage`, `frequency`, `duration`, `quantity`, `instructions`, `morning`, `afternoon`, `evening`, `night`, `before_meal`, `after_meal`) VALUES
-(1, 2, 1, '5', '5', '5', 5, '5', 0, 0, 0, 0, 0, 0);
+(1, 1, 1, '1', 'Daily', '5 Days', 5, '', 0, 0, 0, 0, 0, 0),
+(2, 2, 1, '1', '', '', 5, '', 0, 0, 0, 0, 0, 0),
+(3, 2, 1, '1', '', '', 5, '', 0, 0, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -739,8 +601,8 @@ CREATE TABLE `rooms` (
 INSERT INTO `rooms` (`room_id`, `room_number`, `room_type`, `floor`, `capacity`, `current_occupancy`, `price_per_day`, `amenities`, `is_available`, `is_active`, `created_at`) VALUES
 (1, '101', 'General Ward', 1, 6, 0, 500.00, NULL, 1, 1, '2026-04-20 16:59:34'),
 (2, '102', 'General Ward', 1, 4, 0, 600.00, NULL, 1, 1, '2026-04-20 16:59:34'),
-(3, '201', 'Private', 2, 1, 0, 2500.00, NULL, 1, 1, '2026-04-20 16:59:34'),
-(4, '202', 'Private', 2, 1, 0, 3000.00, NULL, 1, 1, '2026-04-20 16:59:34'),
+(3, '201', 'Private', 2, 1, 1, 2500.00, NULL, 0, 1, '2026-04-20 16:59:34'),
+(4, '202', 'Private', 2, 1, 1, 3000.00, NULL, 0, 1, '2026-04-20 16:59:34'),
 (5, '301', 'ICU', 3, 1, 0, 8000.00, NULL, 1, 1, '2026-04-20 16:59:34');
 
 -- --------------------------------------------------------
@@ -785,13 +647,6 @@ CREATE TABLE `stock_transactions` (
   `notes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `stock_transactions`
---
-
-INSERT INTO `stock_transactions` (`transaction_id`, `medicine_id`, `quantity`, `transaction_type`, `transaction_date`, `notes`) VALUES
-(1, 1, -5, 'dispense', '2026-04-28 02:43:32', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -815,39 +670,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `role`, `is_active`, `last_login`, `created_at`, `updated_at`) VALUES
-(7, 'admin', 'admin@hospital.com', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'admin', 1, '2026-04-28 01:59:47', '2026-04-20 17:17:15', '2026-04-27 20:29:47'),
-(8, 'dr.smith', 'smith@hospital.com', 'f348d5628621f3d8f59c8cabda0f8eb0aa7e0514a90be7571020b1336f26c113', 'doctor', 1, '2026-04-28 01:49:02', '2026-04-20 17:17:15', '2026-04-27 20:19:02'),
+(7, 'admin', 'admin@hospital.com', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'admin', 1, '2026-06-16 13:29:45', '2026-04-20 17:17:15', '2026-06-16 07:59:45'),
+(8, 'dr.smith', 'smith@hospital.com', 'f348d5628621f3d8f59c8cabda0f8eb0aa7e0514a90be7571020b1336f26c113', 'doctor', 1, '2026-06-01 13:06:13', '2026-04-20 17:17:15', '2026-06-01 07:36:13'),
 (9, 'dr.johnson', 'johnson@hospital.com', 'f348d5628621f3d8f59c8cabda0f8eb0aa7e0514a90be7571020b1336f26c113', 'doctor', 1, NULL, '2026-04-20 17:17:15', '2026-04-20 17:17:15'),
-(10, 'reception', 'reception@hospital.com', '5d37ed314cf2b5c8462b52b12cd512e2ac4a180e75598da4f12bfb0dea6d0a67', 'receptionist', 1, '2026-04-28 02:10:17', '2026-04-20 17:17:15', '2026-04-27 20:40:17'),
-(11, 'pharmacy', 'pharmacy@hospital.com', 'ed5273f7ab1e24f89704b06074e12565a17da3d0457bd9a5271b43816f985d57', 'pharmacist', 1, '2026-04-28 02:11:11', '2026-04-20 17:17:15', '2026-04-27 20:41:11'),
-(12, 'labtech', 'lab@hospital.com', '3705b578e8fcb1b82a94ad917881ec248bbd4111645e91aed3c19af12d82116f', 'lab_technician', 1, '2026-04-28 02:11:53', '2026-04-20 17:17:15', '2026-04-27 20:41:53');
-
--- --------------------------------------------------------
-
---
--- Structure for view `appointment_summary`
---
-DROP TABLE IF EXISTS `appointment_summary`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `appointment_summary`  AS SELECT `a`.`appointment_id` AS `appointment_id`, `a`.`appointment_number` AS `appointment_number`, `a`.`patient_id` AS `patient_id`, `a`.`doctor_id` AS `doctor_id`, `a`.`appointment_date` AS `appointment_date`, `a`.`appointment_time` AS `appointment_time`, `a`.`end_time` AS `end_time`, `a`.`appointment_type` AS `appointment_type`, `a`.`status` AS `status`, `a`.`payment_status` AS `payment_status`, `a`.`symptoms` AS `symptoms`, `a`.`notes` AS `notes`, `a`.`prescription` AS `prescription`, `a`.`is_emergency` AS `is_emergency`, `a`.`waiting_number` AS `waiting_number`, `a`.`cancellation_reason` AS `cancellation_reason`, `a`.`reschedule_reason` AS `reschedule_reason`, `a`.`created_by` AS `created_by`, `a`.`created_at` AS `created_at`, `a`.`updated_at` AS `updated_at`, concat(`p`.`first_name`,' ',`p`.`last_name`) AS `patient_name`, concat('Dr. ',`d`.`first_name`,' ',`d`.`last_name`) AS `doctor_name`, `d`.`specialization` AS `specialization` FROM ((`appointments` `a` join `patients` `p` on(`a`.`patient_id` = `p`.`patient_id`)) join `doctors` `d` on(`a`.`doctor_id` = `d`.`doctor_id`)) ;
-
--- --------------------------------------------------------
-
---
--- Structure for view `billing_summary`
---
-DROP TABLE IF EXISTS `billing_summary`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `billing_summary`  AS SELECT `b`.`bill_id` AS `bill_id`, `b`.`bill_number` AS `bill_number`, `b`.`patient_id` AS `patient_id`, `b`.`appointment_id` AS `appointment_id`, `b`.`bill_date` AS `bill_date`, `b`.`due_date` AS `due_date`, `b`.`subtotal` AS `subtotal`, `b`.`tax_amount` AS `tax_amount`, `b`.`discount_amount` AS `discount_amount`, `b`.`discount_reason` AS `discount_reason`, `b`.`total_amount` AS `total_amount`, `b`.`amount_paid` AS `amount_paid`, `b`.`balance_amount` AS `balance_amount`, `b`.`payment_status` AS `payment_status`, `b`.`payment_method` AS `payment_method`, `b`.`payment_date` AS `payment_date`, `b`.`transaction_id` AS `transaction_id`, `b`.`insurance_claim_id` AS `insurance_claim_id`, `b`.`notes` AS `notes`, `b`.`created_by` AS `created_by`, `b`.`created_at` AS `created_at`, `b`.`updated_at` AS `updated_at`, concat(`p`.`first_name`,' ',`p`.`last_name`) AS `patient_name`, `p`.`mr_number` AS `mr_number` FROM (`billing` `b` join `patients` `p` on(`b`.`patient_id` = `p`.`patient_id`)) ;
-
--- --------------------------------------------------------
-
---
--- Structure for view `patient_details`
---
-DROP TABLE IF EXISTS `patient_details`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `patient_details`  AS SELECT `p`.`patient_id` AS `patient_id`, `p`.`user_id` AS `user_id`, `p`.`mr_number` AS `mr_number`, `p`.`first_name` AS `first_name`, `p`.`last_name` AS `last_name`, `p`.`date_of_birth` AS `date_of_birth`, `p`.`gender` AS `gender`, `p`.`blood_group` AS `blood_group`, `p`.`phone` AS `phone`, `p`.`alternate_phone` AS `alternate_phone`, `p`.`email` AS `email`, `p`.`address` AS `address`, `p`.`city` AS `city`, `p`.`state` AS `state`, `p`.`pincode` AS `pincode`, `p`.`emergency_contact_name` AS `emergency_contact_name`, `p`.`emergency_contact_phone` AS `emergency_contact_phone`, `p`.`emergency_contact_relation` AS `emergency_contact_relation`, `p`.`marital_status` AS `marital_status`, `p`.`occupation` AS `occupation`, `p`.`insurance_provider` AS `insurance_provider`, `p`.`insurance_number` AS `insurance_number`, `p`.`profile_image` AS `profile_image`, `p`.`is_active` AS `is_active`, `p`.`created_at` AS `created_at`, `p`.`updated_at` AS `updated_at`, timestampdiff(YEAR,`p`.`date_of_birth`,curdate()) AS `age`, concat(`p`.`first_name`,' ',`p`.`last_name`) AS `full_name` FROM `patients` AS `p` ;
+(10, 'reception', 'reception@hospital.com', '5d37ed314cf2b5c8462b52b12cd512e2ac4a180e75598da4f12bfb0dea6d0a67', 'receptionist', 1, '2026-06-01 13:10:11', '2026-04-20 17:17:15', '2026-06-01 07:40:11'),
+(11, 'pharmacy', 'pharmacy@hospital.com', 'ed5273f7ab1e24f89704b06074e12565a17da3d0457bd9a5271b43816f985d57', 'pharmacist', 1, '2026-06-01 13:13:05', '2026-04-20 17:17:15', '2026-06-01 07:43:05'),
+(12, 'labtech', 'lab@hospital.com', '3705b578e8fcb1b82a94ad917881ec248bbd4111645e91aed3c19af12d82116f', 'lab_technician', 1, '2026-06-01 13:15:21', '2026-04-20 17:17:15', '2026-06-01 07:45:21');
 
 --
 -- Indexes for dumped tables
@@ -864,15 +692,6 @@ ALTER TABLE `admissions`
   ADD KEY `idx_admission_number` (`admission_number`),
   ADD KEY `idx_patient` (`patient_id`),
   ADD KEY `idx_status` (`status`);
-
---
--- Indexes for table `ambulances`
---
-ALTER TABLE `ambulances`
-  ADD PRIMARY KEY (`ambulance_id`),
-  ADD UNIQUE KEY `vehicle_number` (`vehicle_number`),
-  ADD KEY `idx_vehicle` (`vehicle_number`),
-  ADD KEY `idx_availability` (`is_available`);
 
 --
 -- Indexes for table `appointments`
@@ -924,24 +743,6 @@ ALTER TABLE `doctors`
   ADD KEY `idx_specialization` (`specialization`),
   ADD KEY `idx_doctor_code` (`doctor_code`),
   ADD KEY `department_id` (`department_id`);
-
---
--- Indexes for table `insurance_claims`
---
-ALTER TABLE `insurance_claims`
-  ADD PRIMARY KEY (`claim_id`),
-  ADD UNIQUE KEY `claim_number` (`claim_number`),
-  ADD KEY `idx_claim_number` (`claim_number`),
-  ADD KEY `idx_patient` (`patient_id`);
-
---
--- Indexes for table `inventory`
---
-ALTER TABLE `inventory`
-  ADD PRIMARY KEY (`item_id`),
-  ADD UNIQUE KEY `item_code` (`item_code`),
-  ADD KEY `idx_item_name` (`item_name`),
-  ADD KEY `idx_expiry` (`expiry_date`);
 
 --
 -- Indexes for table `lab_orders`
@@ -1079,19 +880,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `admissions`
 --
 ALTER TABLE `admissions`
-  MODIFY `admission_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `ambulances`
---
-ALTER TABLE `ambulances`
-  MODIFY `ambulance_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `admission_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `billing`
@@ -1118,18 +913,6 @@ ALTER TABLE `doctors`
   MODIFY `doctor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `insurance_claims`
---
-ALTER TABLE `insurance_claims`
-  MODIFY `claim_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `inventory`
---
-ALTER TABLE `inventory`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `lab_orders`
 --
 ALTER TABLE `lab_orders`
@@ -1145,7 +928,7 @@ ALTER TABLE `lab_order_items`
 -- AUTO_INCREMENT for table `lab_requests`
 --
 ALTER TABLE `lab_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `lab_tests`
@@ -1169,7 +952,7 @@ ALTER TABLE `medicines`
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `prescriptions`
@@ -1181,7 +964,7 @@ ALTER TABLE `prescriptions`
 -- AUTO_INCREMENT for table `prescription_items`
 --
 ALTER TABLE `prescription_items`
-  MODIFY `presc_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `presc_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `rooms`
@@ -1199,7 +982,7 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT for table `stock_transactions`
 --
 ALTER TABLE `stock_transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1251,12 +1034,6 @@ ALTER TABLE `departments`
 ALTER TABLE `doctors`
   ADD CONSTRAINT `doctors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL,
   ADD CONSTRAINT `doctors_ibfk_2` FOREIGN KEY (`department_id`) REFERENCES `departments` (`dept_id`) ON DELETE SET NULL;
-
---
--- Constraints for table `insurance_claims`
---
-ALTER TABLE `insurance_claims`
-  ADD CONSTRAINT `insurance_claims_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`patient_id`);
 
 --
 -- Constraints for table `lab_orders`

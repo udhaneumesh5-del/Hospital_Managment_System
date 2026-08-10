@@ -51,6 +51,15 @@ class BillingModule:
             cursor.execute(query, params)
             bills = cursor.fetchall()
             
+            # Get patients for dropdown
+            cursor.execute("""
+                SELECT patient_id, first_name, last_name, mr_number
+                FROM patients
+                WHERE is_active = 1
+                ORDER BY first_name
+            """)
+            patients = cursor.fetchall()
+            
             # Get summary
             cursor.execute("""
                 SELECT 
@@ -64,8 +73,15 @@ class BillingModule:
             
             db.close()
             
-            return render_template('reception/billing.html', bills=bills, summary=summary,
-                                 status_filter=status_filter, date_from=date_from, date_to=date_to)
+            return render_template(
+                'reception/billing.html',
+                bills=bills,
+                summary=summary,
+                patients=patients,
+                status_filter=status_filter,
+                date_from=date_from,
+                date_to=date_to
+            )
         
         @self.app.route('/generate_bill', methods=['POST'])
         def generate_bill():

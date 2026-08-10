@@ -5,7 +5,7 @@
 **Project Title:** Hospital Management System
 **Technology Stack:** Python Flask, MySQL, HTML5, CSS3, JavaScript
 **Institution:** City General Hospital
-**Academic Year:** 2024-2025
+**Academic Year:** 2025-2026
 
 ---
 
@@ -126,7 +126,7 @@ The Hospital Management System follows a **Three-Tier Architecture** pattern:
 ├─────────────────────────────────────────────────────────────┤
 │                      DATA LAYER                              │
 │                  (MySQL Database)                            │
-│              25 Tables | Relational Model                    │
+│              19 Tables | Relational Model                    │
 └─────────────────────────────────────────────────────────────┘
 ```
 

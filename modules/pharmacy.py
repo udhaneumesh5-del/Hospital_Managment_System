@@ -56,7 +56,7 @@ class PharmacyModule:
             
             # Recent prescriptions
             cursor.execute("""
-                SELECT p.prescription_id, p.prescription_number, p.prescription_date,
+                SELECT p.prescription_id, p.prescription_number, p.prescription_date, p.status,
                        CONCAT(pat.first_name, ' ', pat.last_name) as patient_name,
                        CONCAT(d.first_name, ' ', d.last_name) as doctor_name
                 FROM prescriptions p
